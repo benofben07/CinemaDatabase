@@ -66,7 +66,7 @@ public class CustomDate implements Comparable<CustomDate>{
     }
     
     // returns number of days in given month
-    private int getDayInMonth(int month) {
+    private int getDayInMonth(int month) {        
         int[] dayInMonths = new int[] {31, 29, 31, 30,
                                        31, 30, 31, 31,
                                        30, 31, 30, 31};
@@ -74,14 +74,13 @@ public class CustomDate implements Comparable<CustomDate>{
     }
     
     /**
-     *
+     * Creates new object via data String in form:
+     * 'year-month-data hour:minute:second'.
+     * Validates values then returns object or throws
+     * InvalidCustomDataException is there is any invalid argument.
      * @param data
      * @return
      * @throws InvalidCustomDateException
-     * Creates new object via data String in form:
-     * year-month-data hour:minute:second
-     * Validates values then returns object or throws
-     * InvalidCustomDataException is there is any invalid argument.
      */
     public static CustomDate stringToCustomDate(String data)
             throws InvalidCustomDateException{
@@ -94,15 +93,14 @@ public class CustomDate implements Comparable<CustomDate>{
     }
     
     /**
-     *
-     * @param minutes
-     * @return created CustomDate object only minutes. Balances minutes to
+     * Creates CustomDate object with only minutes. Balances minutes to
      * hours if arg >= 60 and sets hour according to it.
      * Most useful to use for addHms() parameter
+     * @param minutes
+     * @return 
      * @throws date.InvalidCustomDateException
      */
-    // test
-    public static CustomDate MinutesToCustomDate(int minutes) 
+    public static CustomDate minutesToCustomDate(int minutes) 
             throws InvalidCustomDateException{
         
         CustomDate date = new CustomDate();
@@ -146,18 +144,10 @@ public class CustomDate implements Comparable<CustomDate>{
      *
      * @return date as a string. For example '06:30:15'
      */
-    // test
     public String getHmsAsString() {
         return new StringBuilder().append(hour).append(":")
                                   .append(minute).append(":")
                                   .append(second).toString();
-    }
-
-    public boolean intervalsWith(CustomDate other) {
-        if ( this.equals(other) ) return true;
-        
-        return false;
-        
     }
     
     /* ========================= ADDITION ================================== */
@@ -165,10 +155,9 @@ public class CustomDate implements Comparable<CustomDate>{
     /**
      *
      * @param toAdd
-     * Use  HmstoCustomDate() to create a CustomDate object with only
+     * Use  minutesToCustomDate() to create a CustomDate object with only
      * hour, minute and seconds to add easily.
      */
-    // test
     public CustomDate addHms(CustomDate toAdd) {
         this.hour   += toAdd.hour;
         this.minute += toAdd.minute;
@@ -178,7 +167,6 @@ public class CustomDate implements Comparable<CustomDate>{
         return this;
     }
     
-    //test
     public CustomDate addMinutes(int minutes) {
         this.minute += minutes;
         balance();
@@ -201,7 +189,7 @@ public class CustomDate implements Comparable<CustomDate>{
             hour -= howMany * 24;
             day  += howMany;
         }
-        if ( day >= getDayInMonth(month) ) {
+        if ( month > 0 && day >= getDayInMonth(month) ) {
             int howMany = additionalTime(day, getDayInMonth(month));
             day   -= howMany * getDayInMonth(month);
             month += howMany;
@@ -225,33 +213,6 @@ public class CustomDate implements Comparable<CustomDate>{
         }
         return needToAdd;
     }
-    
-    /*public CustomDate calculate(CustomDate start, int length) {
-        // increase length because of cleanup
-        length += 30;
-        
-        int hours = 0;
-        int minutes;
-        while(length >= 60) {
-            ++hours;
-            length -= 60;
-        }
-        minutes = length;
-        
-        return addDates(start, new CustomDate(hours,minutes));
-        
-    }
-    
-    private CustomDate addDates(CustomDate start, int hour, int minute) {
-        int resultHour = start.hour + end.hour;
-        int resultMinute = start.minute + end.minute;
-        while(resultMinute >= 60) {
-            ++resultHour;
-            resultMinute = resultMinute - 60;
-        }
-        
-        return new CustomDate(resultHour, resultMinute);
-    }*/
 
     /* ================= OVERRIDING AND SUBMETHOTDS ======================== */
     

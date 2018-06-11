@@ -1,13 +1,16 @@
 package cinemadatabase;
 
 import date.CustomDate;
+import date.CustomInterval;
 import date.InvalidCustomDateException;
-import entities.Movie;
-import entities.Screening;
-import entities.Seat;
+import logic.entities.Movie;
+import logic.entities.Screening;
+import logic.entities.Seat;
 import java.util.List;
 import java.util.Map;
-import mvc.Controller;
+import controller.Controller;
+import logic.ScreeningAdditionEnum;
+import logic.ScreeningStateContainer;
 
 public class CinemaDataBase {
 
@@ -41,14 +44,40 @@ public class CinemaDataBase {
         c.getSeats();*/
         
         //System.out.println(c.listScreening());
-        List<Screening> s = c.getScreenings();
+        /*List<Screening> s = c.getScreenings();
         c.addSeat(s.get(0), 3, 4);
-        System.out.println(c.getBookedSeats(s.get(0)));
+        System.out.println(c.getBookedSeats(s.get(0)));*/
         
-    }
-    
-    public static void printMap(Map m) {
-        System.out.println(m.toString());
+        /* beautifully working
+        try {
+            CustomDate cd = CustomDate.stringToCustomDate("2015-05-05 16:30:00");
+            CustomDate cd2 = new CustomDate(cd);
+            CustomDate cd3 = CustomDate.minutesToCustomDate(150);
+            System.out.println(cd2.addMinutes(150).compareTo(cd.addHms(cd3)));
+        } catch (InvalidCustomDateException e) {
+            System.out.println(e.getMessage());
+        }*/
+        /* works beautifully
+        try {
+            CustomDate cd = CustomDate.minutesToCustomDate(300);
+            CustomDate cd2 = CustomDate.minutesToCustomDate(299);
+            CustomInterval ci = new CustomInterval(cd, 150);
+            CustomInterval ci2 = new CustomInterval(cd2, 121);
+            System.out.println(ci.overlapsWith(ci2));
+        } catch (InvalidCustomDateException e) {
+            System.out.println(e.getMessage());
+        } */
+        /*System.out.println(c.listScreening());
+        System.out.println(c.listMovies());*/
+        
+        /* seems working
+        System.out.println("Old screening: " + c.listScreening());
+       // System.out.println("sc: " + c.newScreening(1, 2, "2018-06-20 17:00:00"));
+        System.out.println("sc: " + c.newScreening(3, 3, "2018-06-10 17:00:00"));
+        System.out.println("sc: " + c.newScreening(1, 3, "2018-06-10 19:59:00"));
+        System.out.println("new screening: " + c.listScreening());
+        */
+        
     }
     
 }

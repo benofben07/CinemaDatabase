@@ -1,21 +1,20 @@
-package dao;
+package logic.dao;
 
 import cinemadatabase.DBInit;
-import entities.CinemaHall;
-import entities.Movie;
-import entities.Screening;
+import logic.entities.CinemaHall;
+import logic.entities.Screening;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import mvc.Logic;
+import logic.MainLogic;
 
 public class DAOScreening implements DAOGeneral{
     
-    private final Logic logic;
+    private final MainLogic logic;
     
-    public DAOScreening(Logic logic) {
+    public DAOScreening(MainLogic logic) {
         this.logic = logic;
     }
     
@@ -30,11 +29,9 @@ public class DAOScreening implements DAOGeneral{
         return screening.get(0);
     }
     
-    // test
     public List getDataByMovieId(int id) {
         return getDataBySQL( "SELECT * FROM SCREENING WHERE FK_MOVIE_ID=" + id);
     }
-    // test
     public List getScreeningsByCinemaHallId(int id) {
         return getDataBySQL( "SELECT * FROM SCREENING WHERE FK_CINEMA_HALL_ID=" + id);
     }

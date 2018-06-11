@@ -13,6 +13,10 @@ public final class DBInit{
     // cannot be instantiated
     private DBInit() {}
     
+    /**
+     * Sets up database.
+     * Creates tables and fills them with data.
+     */
     public static void setupDB(){
         //elérhető-e a ClientDriver oszály
         try {
@@ -79,6 +83,12 @@ public final class DBInit{
         }
     }
     
+    /**
+     * Connects to MySql database server and returns a Statement object
+     * for data manipulation.
+     * @return Statement object ready to be used for database interaction
+     * @throws SQLException
+     */
     public static Statement getStatement() throws SQLException{
         Connection conn = DriverManager.getConnection(
             "jdbc:mysql://localhost:3306/test?useUnicode=true" + 

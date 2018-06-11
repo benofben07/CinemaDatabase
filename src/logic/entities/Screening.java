@@ -1,21 +1,25 @@
-package entities;
+package logic.entities;
 
 import date.CustomDate;
+import date.CustomInterval;
+import date.InvalidCustomDateException;
 
 public class Screening {
     private final Movie movie;
     private final CinemaHall cinemaHall;
     private final int id;
-   // private CustomDate begin;
-    private final String begin;
-    private CustomDate endTimePlus30Minutes;
+    private CustomInterval interval;
 
     public Screening(int id, Movie movie, CinemaHall cinemaHall, String begin) {
         this.id         = id;
         this.movie      = movie;
         this.cinemaHall = cinemaHall;
-        this.begin      = begin;//CustomDate.stringToCustomDate(begin);
-        //endTimePlus30Minutes.calculate(startTime, movie.getDuration());
+        try {
+            this.interval  = new CustomInterval(
+                    CustomDate.stringToCustomDate(begin), movie.getDuration());
+        } catch (InvalidCustomDateException e) {
+            System.out.println(e.getMessage());
+        }
     }
     
     public int getId() {
@@ -34,19 +38,19 @@ public class Screening {
         return cinemaHall.getNumOfCols() * cinemaHall.getNumOfRows();
     }
 
-    /*public CustomDate getStartTime() {
-        return startTime;
-    }*/
-
-    public CustomDate getEndTimePlus30Minutes() {
-        return endTimePlus30Minutes;
+    public CustomInterval getInterval() {
+        return interval;
+    }
+    
+    public void setInterval(CustomInterval interval) {
+        this.interval = interval;
     }
     
     @Override
     public String toString() {
         return new StringBuilder().append(id).append(", ").append(movie.toString())
                 .append(", ").append(cinemaHall.toString()).append(", ")
-                /*.append(freeSpaces).append(", ")*/.append(begin).toString();
+                .append(interval.beginToString()).toString();
     }
     
 }

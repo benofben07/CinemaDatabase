@@ -1,14 +1,14 @@
-package dao;
+package logic.dao;
 
 import cinemadatabase.DBInit;
-import entities.CinemaHall;
+import logic.entities.CinemaHall;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAOCinemaHall implements  DAOGeneral {
+public class DAOCinemaHall implements DAOGeneral {
 
     public CinemaHall getById(int id) {
         List<CinemaHall> ch = getDataBySQL(
@@ -16,7 +16,6 @@ public class DAOCinemaHall implements  DAOGeneral {
         return ch.get(0);
     }
     
-    //test
     public CinemaHall getByName(String name) {
         List<CinemaHall> ch = getDataBySQL(
                 "SELECT * FROM CINEMA_HALL WHERE NAME=\'" + name + "\'");

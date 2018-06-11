@@ -22,8 +22,7 @@ public class CustomInterval {
         end = new CustomDate(begin);
         end.addMinutes(minutes);
     }
-    
-    // test
+
     public boolean overlapsWith(CustomInterval other) {
         if (this.equals(other)) return true;
         
@@ -34,11 +33,11 @@ public class CustomInterval {
         
         // if other started earlier
         if (!thisStartedEarlier) {
+            // other has already ended when this began
+            if ( this.begin.compareTo(other.end) > 0) return false;
             // other began earlier and ended at the same time this began
             // we don't consider this overlaping
             if ( this.begin.equals(other.end) )       return false;
-            // other has already ended when this began
-            if ( this.begin.compareTo(other.end) > 0) return false;
             // if other started earlier but didn't end until this began
             // they surely overlap
             return true;
@@ -69,6 +68,14 @@ public class CustomInterval {
         // only possibility left: this ended earlier than other began -> not overlapping
         return false;
     }
+
+    public CustomDate getBegin() {
+        return begin;
+    }
+
+    public CustomDate getEnd() {
+        return end;
+    }
     
     public String beginToString() {
         return begin.toString();
@@ -78,7 +85,6 @@ public class CustomInterval {
         return end.toString();
     }
     
-    // test
     @Override
     public boolean equals(Object other) {
         if (other == null) return false;
@@ -97,6 +103,13 @@ public class CustomInterval {
         hash = 47 * hash + Objects.hashCode(this.begin);
         hash = 47 * hash + Objects.hashCode(this.end);
         return hash;
+    }
+    
+    @Override
+    public String toString() {
+        return new StringBuilder().append("begin: ").append(beginToString())
+                                  .append("\nend: ").append(endToString())
+                                  .toString();
     }
 
 }

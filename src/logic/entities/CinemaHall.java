@@ -1,4 +1,4 @@
-package entities;
+package logic.entities;
 
 public class CinemaHall {
     private final String name;

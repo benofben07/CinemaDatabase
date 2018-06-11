@@ -1,29 +1,37 @@
-package dao;
+package logic.dao;
 
 import cinemadatabase.DBInit;
-import entities.Screening;
-import entities.Seat;
+import logic.entities.Seat;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import mvc.Logic;
+import logic.MainLogic;
 
- // test whole
 public class DAOSeat implements DAOGeneral{
 
-    private final Logic logic;
+    private final MainLogic logic;
     
-    public DAOSeat (Logic l) {
+    public DAOSeat (MainLogic l) {
         this.logic = l;
     }
     
+    /**
+     * Returns a list containins all objects
+     * @return all Seat object contained in database as a List<Seat>
+     */
     @Override
     public List getData() {
         return getDataBySQL("SELECT * FROM SEAT");
     }
     
+    /**
+     * Returns a list containing Seats belonging to given Screening object
+     * @param screeningId
+     * ID of a screening
+     * @return List<Seat> belonging to given screening
+     */
     public List getSeatsByScreening(int screeningId) {
         return getDataBySQL("SELECT * FROM SEAT WHERE FK_SCREENING_ID=" + screeningId);
     }
@@ -57,7 +65,7 @@ public class DAOSeat implements DAOGeneral{
     /**
      *
      * @param data
-     * expects a Object[3] as parameter
+     * expects an Object[3] as parameter
      * first: screening ID
      * second: row
      * third: col
@@ -88,6 +96,10 @@ public class DAOSeat implements DAOGeneral{
         
     }
 
+    /**
+     * Not implemented, not necessary.
+     * @param data
+     */
     @Override
     public void removeData(Object data) {
         // not necessary

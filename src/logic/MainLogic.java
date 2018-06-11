@@ -1,21 +1,24 @@
-package mvc;
+package logic;
 
-import dao.DAOCinemaHall;
-import dao.DAOGeneral;
-import dao.DAOMovie;
-import dao.DAOScreening;
-import dao.DAOSeat;
+import logic.dao.DAOCinemaHall;
+import logic.dao.DAOGeneral;
+import logic.dao.DAOMovie;
+import logic.dao.DAOScreening;
+import logic.dao.DAOSeat;
 import date.CustomDate;
-import entities.CinemaHall;
-import entities.Movie;
-import entities.Screening;
-import entities.Seat;
+import date.CustomInterval;
+import date.InvalidCustomDateException;
+import logic.entities.CinemaHall;
+import logic.entities.Movie;
+import logic.entities.Screening;
+import logic.entities.Seat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import controller.Controller;
 
-public class Logic {
+public class MainLogic {
    
     private final Controller controller;
     
@@ -24,7 +27,12 @@ public class Logic {
     private DAOGeneral daoSeat;
     private DAOGeneral daoCinemaHall;
     
-    public Logic( Controller c ) {
+    /**
+     * Logic object constructor. Creates connections to dao objects.
+     * @param c
+     * Controller object linked to this Logic object
+     */
+    public MainLogic( Controller c ) {
          controller = c;
          createConnection();
     }
@@ -32,6 +40,7 @@ public class Logic {
     private void createConnection() {
         daoMovie      = new DAOMovie();
         daoCinemaHall = new DAOCinemaHall();
+        
         // screening and seat needs to communicate with logic
         daoScreening  = new DAOScreening(this);
         daoSeat       = new DAOSeat(this);
@@ -41,11 +50,20 @@ public class Logic {
     /* ======================= GETTERS ===================================== */
     
     /* ------------------------- MOVIE ----------------------------- */
-    
+
+    /**
+     * Reads from database and returns all Movie objects as a List
+     * @return Movie objects as a List.
+     */
     public List getMovies() {
         return daoMovie.getData();
     }
 
+    /**
+     * Reads from database movies and sold tickets for every movie.
+     * Returns value as a map.
+     * @return Map with parameters <Movie, sold ticket amount>
+     */
     public Map listMovies() {
         List<Movie> movies = getMovies();
         // param <movie, sold ticket amount>
@@ -56,9 +74,12 @@ public class Logic {
         return movieSoldTicket;
     }
     
+    // counting sold tickets using daoSeat and daoScreening objects
     private int getMovieSoldTicket(int movieId) {
+        // casting to use DAOScreening, DAOSeat specific methods
         DAOScreening dScreening = (DAOScreening) daoScreening;
         DAOSeat dSeat = (DAOSeat) daoSeat;
+        
         List<Screening> screenings = dScreening.getDataByMovieId(movieId);
        
         int soldTickets = 0;
@@ -70,6 +91,14 @@ public class Logic {
         return soldTickets;
     }
     
+    /**
+     *
+     * @param movieRaw
+     * Expects a movie in raw format from View
+     * For example 'Title,English,David Yates'
+     * @return max play value of given movie
+     * or -1 if no movies found with given string.
+     */
     public int getMovieMaxPlay(String movieRaw) {
         List<Movie> movies= daoMovie.getData();
         // title, origin, director
@@ -84,30 +113,60 @@ public class Logic {
         return -1;
     }
     
+    /**
+     * Searches for given Movie via its id in database then returns it.
+     * @param id
+     * Movie id
+     * @return Movie object
+     */
     public Movie getMovieById(int id) {
+        // casting to use DAOMovie specific methods
         DAOMovie dm = (DAOMovie) daoMovie;
         return dm.getById(id);
     }
     
+    /**
+     * Gets ID for a Movie object from database and returs completed object.
+     * @param m
+     * Movie without id (defaultly set to -1)
+     * @return complete Movie object with id
+     */
     public Movie getMovieWithoutId(Movie m) {
+        // casting to use DAOMovie specific methods
         DAOMovie dm = (DAOMovie) daoMovie;
         return dm.getMovieWithoutId(m);
     }
     
     /* ------------------------ CINEMA_HALL ----------------------------- */
-    
+
+    /**
+     * Gets CinemaHall object from database via its ID.
+     * @param id
+     * CinemaHall id
+     * @return CinemaHall object
+     */
     public CinemaHall getCinemaHallById(int id) {
+        // casting to use DAOScreening, DAOCinemaHall specific methods
         DAOCinemaHall dch = (DAOCinemaHall) daoCinemaHall;
         return dch.getById(id);
     }
     
+    /**
+     * Reads every CinemaHall object from database and returns them
+     * as a List<CinemaHall>
+     * @return List containing CinemaHall objects.
+     */
     public List getCinemaHalls() {
         return daoCinemaHall.getData();
     }
     
     /* ------------------------ SCREENING ------------------------------ */
-    
-    // test - seems working
+
+    /**
+     * Gets every Screening from database first, then get sold ticket to
+     * each. Puts it into a map according to its result.
+     * @return Map with parameters <Screening, sold ticket amount>
+     */
     public Map listScreenings() {
         List<Screening> screenings = getScreenings();
         // param <screening, sold ticket amount>
@@ -118,24 +177,42 @@ public class Logic {
         return screeningSoldTicket;
     }
     
+    // uses a DAOSeat object to get sold tickets to given Screening
     private int getScreeningSoldTicket(int screeningId) {
+        // casting to use DAOSeat specific methods
         DAOSeat dSeat = (DAOSeat) daoSeat;
         return dSeat.getSeatsByScreening(screeningId).size();
     }
     
+    /**
+     * Reads from database and returns all Screening objects in a List.
+     * @return List containing Screening objects.
+     */
     public List getScreenings() {
         return daoScreening.getData();
     }
     
-    // test
+    /**
+     * Reads from database and gets Screening with given ID.
+     * @param id
+     * Screening id
+     * @return Screening object
+     */
     public Screening getScreeningById(int id) {
+        // casting to use DAOScreening specific methods
         DAOScreening ds = (DAOScreening) daoScreening;
         return ds.getScreeningById(id);
     }
     
     /* ------------------------ SEATS --------------------------------- */
-    
-    // test -- seems working
+
+    /**
+     * Reads database for given Screening and collects taken seats
+     * into a Map <row, col> then returns it.
+     * @param s
+     * Screening object
+     * @return Map with param <row, col>
+     */
     public Map getBookedSeats(Screening s) {
         List<Seat> seats = getSeats();
         // param<row, col>
@@ -147,29 +224,52 @@ public class Logic {
         return bookedSeats;
     }
     
+    /**
+     * Reads database and returns Seat objects.
+     * @return List containins Seat objects.
+     */
     public List getSeats() {
         return daoSeat.getData();
     }
     
     /* ======================= SETTERS ===================================== */
-    
+
+    /**
+     * Adds a given Movie object to database.
+     * @param movie
+     * Movie to add
+     */
     public void addMovies(Movie movie) {
         daoMovie.addData((Object) movie);
     }
     
+    /**
+     * Creates a new Screening. Adds screening to database as well.
+     * @param m
+     * Movie to add
+     * @param ch
+     * Cinema hall where Screening takes place
+     * @param begin
+     * CustomDate in raw format (e.g. '2015-12-21 12:30:00')
+     * @return ScreeningStateContainer object containing any problem
+     * or success.
+     */
     public ScreeningStateContainer addScreening(Movie m, CinemaHall ch, String begin) {
         // checking constraintst
         ScreeningStateContainer state = new ScreeningStateContainer(
                 ScreeningAdditionEnum.SUCCES);
         
         if ( !checkMaxPlay(m) ) {
-            state.setState(ScreeningAdditionEnum.SUCCES);
+            state.setState(ScreeningAdditionEnum.INCORRECT_MAX_PLAY);
             return state;
-        } else if ( !checkCinemaHalls(m, ch, begin) ) {
-            state.setState(ScreeningAdditionEnum.SUCCES);
+        } else if ( !checkScreeningsOverlap(m, ch, begin) ) {
+            state.setState(ScreeningAdditionEnum.SCREENINGS_OVERLAP);
             return state;
-        } else if ( ! checkAgeLimit(m.getAgeLimit(), begin) ) {
-            state.setState(ScreeningAdditionEnum.SUCCES);
+        } else if ( !checkAgeLimit(m.getAgeLimit(), begin) ) {
+            state.setState(ScreeningAdditionEnum.INCORRECT_AGE_LIMIT);
+            return state;
+        } else if ( !checkScreenedInTooManyHalls(m, begin) ) {
+            state.setState(ScreeningAdditionEnum.SCREENED_IN_TOO_MANY_HALLS);
             return state;
         }
         
@@ -182,14 +282,101 @@ public class Logic {
         return state;
     }
     
+    private boolean checkMaxPlay(Movie movie) {
+        // casting to use DAOScreening specific methods
+        DAOScreening ds = (DAOScreening) daoScreening;
+        return ( movie.getMaxPlay() > ds.getMovieCount(movie.getId()) );
+    }
+    
+    // getting every screening with given movie
+    // checking if there are more than {overlapAmount} overlaps with this movie
+    // if there are return false else true
+    private boolean checkScreenedInTooManyHalls(Movie m, String begin) {
+        int overlapAmount = 3;
+        
+        // casting to use DAOScreening specific methods
+        DAOScreening ds = (DAOScreening) daoScreening;
+
+        List<Screening> screenings = ds.getDataByMovieId(m.getId());
+        try {
+            CustomInterval movieInterval = new CustomInterval(
+                    CustomDate.stringToCustomDate(begin), m.getDuration());
+            // counting overlaps with every screening with given movie
+            // setting counter to 1 so when it finds an overlap
+            // counter will be 2
+            int overlapCounter = 1;
+            for (Screening s : screenings) {
+                if (s.getInterval().overlapsWith(movieInterval)) ++overlapCounter;
+            }
+            return overlapCounter <= overlapAmount;
+            
+        } catch (InvalidCustomDateException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+    
+    // test with cleaning
+    private boolean checkScreeningsOverlap(Movie m, CinemaHall ch, String begin) {
+        try {
+            // adding 30 minutes to both intervals because of cleaning
+            CustomInterval movieInterval = new CustomInterval(
+                    CustomDate.stringToCustomDate(begin), m.getDuration() + 30);
+            
+            // casting to use DAOScreening specific methods
+            DAOScreening dScreening = (DAOScreening) daoScreening;
+            List<Screening> screenings = dScreening
+                    .getScreeningsByCinemaHallId(ch.getId());
+            
+            for (Screening s : screenings) {
+                // adding 30 minutes of cleaning time
+                s.setInterval( addCleaning( s.getInterval(), 30 ) );
+                // if the two overlap return false
+                if( s.getInterval().overlapsWith(movieInterval) ) return false;
+            }
+            
+        } catch (InvalidCustomDateException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private CustomInterval addCleaning(CustomInterval interval, int cleaningTime) {
+        return new CustomInterval(interval.getBegin(), 
+                                  interval.getEnd().addMinutes(cleaningTime));
+    }
+    
+    private boolean checkAgeLimit(int ageLimit, String begin) {
+        try {
+            CustomDate cd = CustomDate.stringToCustomDate(begin);
+            switch (ageLimit) {
+                case 1:
+                    // can be screened any time
+                    return true;
+                case 2:
+                    return (cd.getHour() >= 17);
+                case 3:
+                    return (cd.getHour() >= 21);
+                default:
+                    System.out.println("Invalid age limit");
+                    return false;
+            }
+        } catch (InvalidCustomDateException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+    
     /**
-     *
      * @param s
+     * Screening object
      * @return false if seats are already taken to given screening
      * else it removes screening and returns true
      */
-    // test
     public boolean removeScreening(Screening s) {
+        // casting to use DAOSeat specific methods
         DAOSeat dSeat = (DAOSeat) daoSeat;
         if ( !dSeat.getSeatsByScreening(s.getId()).isEmpty() ) {
             return false;
@@ -198,81 +385,53 @@ public class Logic {
         daoScreening.removeData(s);
         return true;
     }
-    
-    private boolean checkMaxPlay(Movie movie) {
-        DAOScreening ds = (DAOScreening) daoScreening;
-        return ( movie.getMaxPlay() > ds.getMovieCount(movie.getId()) );
-    }
-    
-    private boolean checkCinemaHalls(Movie m, CinemaHall ch, String begin) {
-        return true;
-    }
-    
-    private boolean checkAgeLimit(int agaLimit, String begin) {
-        return true;
-    }
-    
+        
+    /**
+     * Adds a Seat to database for given Screening with given row and col
+     * numbers.
+     * @param s
+     * Screening where booking is happening.
+     * @param row
+     * Row number of Seat.
+     * @param col
+     * Coloumn number of Seat.
+     */
     public void addSeat(Screening s, int row, int col) {
         Object o = new int[] {s.getId(), row, col};
         daoSeat.addData(o);
     }
     
     /* ======================= FILTERS ===================================== */
-    
-    // test
+
+    /**
+     * Filters movies with given title arg. Reads from database then 
+     * returns matching Movie objects.
+     * @param title
+     * String to filter with.
+     * @return List containing filtered Movies.
+     */
     public List filterScreeningByMovie(String title) {
+        // casting to use DAOScreening, DAOMovie specific methods
         DAOMovie dm = (DAOMovie) daoMovie;
         DAOScreening ds = (DAOScreening) daoScreening;
+        
         Movie movie = dm.getByTitle(title);
         return ds.getDataByMovieId(movie.getId());
     }
     
-    // test
+    /**
+     * Filters CinemaHalls with given name arg. Reads from database then 
+     * returns matching CinemaHall objects.
+     * @param cinemaHallName
+     * @return List containing filtered CinemaHalls.
+     */
     public List filterScreeningByCinemaHall(String cinemaHallName) {
+        // casting to use DAOScreening, DAOMovie specific methods
         DAOScreening ds = (DAOScreening) daoScreening;
         DAOCinemaHall dch = (DAOCinemaHall) daoCinemaHall;
+        
         CinemaHall ch = dch.getByName(cinemaHallName);
         return ds.getScreeningsByCinemaHallId(ch.getId());
     }
-    
-    /* ======================= TEST ======================================= */
-    
-    
-    
-   /* public void addScreening(Movie movie, CinemaHall hall, String begin){
-        Screening screening = new Screening(movie, hall, hall.getAllSpace(), begin);
-        List<Screening> screeningList = daoScreening.getData();
-        boolean screeningNotCorrect = false;
-        for (Screening s : screeningList) {
-            if (screeningsAreAtTheSameTime(screening, s)) {
-                screeningNotCorrect = true;
-                controller.errorMessage("Screenings are at the same time.");
-            }
-        }
-        daoScreening.addData(screening);
-    }
-    
-    private boolean screeningsAreAtTheSameTime(Screening first, Screening second) {
-        if (((first.getStartTime().compareTo(second.getStartTime())) < 0) 
-           && (first.getEndTimePlus30Minutes().compareTo(second.getStartTime())) < 0 ) {
-            return false;
-        } else if ((first.getStartTime().compareTo(second.getStartTime())) > 0  
-            && second.getEndTimePlus30Minutes().compareTo(first.getStartTime()) < 0 )  {
-            return false;
-        }
-        return true;
-    }
-    
-    public void removeScreening(Screening screening) {
-        if(screening.getFreeSpaces() != screening.getCinemaHall().getAllSpace()){
-            controller.errorMessage("There are reserved seats.");
-            return;
-        }
-        daoScreening.removeData(screening);
-    }
-    
-    private boolean checkIfBookingIsValid() {
-        return true;
-    }*/
-    
+
 }

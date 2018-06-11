@@ -1,4 +1,6 @@
-package mvc;
+package logic;
+
+import logic.ScreeningAdditionEnum;
 
 public class ScreeningStateContainer {
     private ScreeningAdditionEnum state;
@@ -13,5 +15,10 @@ public class ScreeningStateContainer {
 
     public void setState(ScreeningAdditionEnum state) {
         this.state = state;
+    }
+    
+    @Override
+    public String toString() {
+        return getState().toString();
     }
 }

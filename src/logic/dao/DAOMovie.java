@@ -1,9 +1,7 @@
-package dao;
+package logic.dao;
 
 import cinemadatabase.DBInit;
-import entities.Movie;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import logic.entities.Movie;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,7 +32,7 @@ public class DAOMovie implements DAOGeneral {
                 );
         return mList.get(0);
     }
-    //test
+
     public Movie getByTitle(String title) {
         List<Movie> mList = getDataBySQL(
                 "SELECT * FROM MOVIE WHERE TITLE=\'" + title + "\'");

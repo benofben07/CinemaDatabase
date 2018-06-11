@@ -1,4 +1,4 @@
-package dao;
+package logic.dao;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package entities;
+package logic.entities;
 
 public class Seat {
     private final Screening screening;
