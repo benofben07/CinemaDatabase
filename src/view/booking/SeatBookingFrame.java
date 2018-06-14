@@ -1,6 +1,5 @@
 package view.booking;
 
-import view.booking.SeatButton;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,8 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import view.TutorialTestTable;
+import view.MainView;
 
 public class SeatBookingFrame extends JFrame{
     
@@ -47,7 +45,7 @@ public class SeatBookingFrame extends JFrame{
                     for (int i = 0; i < row; ++i) {
                         for (int j = 0; j < col; ++j) {
                             if (seats[i][j].getColor().equals(Color.YELLOW)) {
-                                ((TutorialTestTable)parentFrame).bookSeat(i+1,j+1);
+                                ((MainView)parentFrame).bookSeat(i+1,j+1);
                             }
                         }
                     }

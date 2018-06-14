@@ -55,7 +55,7 @@ public class MovieTableModel extends AbstractTableModel{
             case 3:
                 return m.getDescription();
             case 4:
-                return m.getDubbed();
+                return m.isDubbed();
             case 5:
                 return m.getDuration();
             case 6:

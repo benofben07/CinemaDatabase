@@ -5,9 +5,9 @@ import logic.dao.DAOGeneral;
 import logic.dao.DAOMovie;
 import logic.dao.DAOScreening;
 import logic.dao.DAOSeat;
-import date.CustomDate;
-import date.CustomInterval;
-import date.InvalidCustomDateException;
+import logic.date.CustomDate;
+import logic.date.CustomInterval;
+import logic.date.InvalidCustomDateException;
 import logic.entities.CinemaHall;
 import logic.entities.Movie;
 import logic.entities.Screening;
@@ -233,10 +233,11 @@ public class MainLogic {
      * @return List with Pairs, param <row, col>
      */
     public List getBookedSeats(Screening s) {
-        List<Seat> seats = getSeats();
+        List<Seat> seats = ((DAOSeat) daoSeat).getSeatsByScreening(s.getId());
         // param<row, col>
         List<Pair<Integer, Integer>> bookedSeats = new ArrayList<>();
         for (Seat seat : seats) {
+            
             bookedSeats.add(new Pair(seat.getRowNumber(), seat.getColNumber()));
         }
         

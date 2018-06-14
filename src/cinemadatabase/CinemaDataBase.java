@@ -1,8 +1,8 @@
 package cinemadatabase;
 
-import date.CustomDate;
-import date.CustomInterval;
-import date.InvalidCustomDateException;
+import logic.date.CustomDate;
+import logic.date.CustomInterval;
+import logic.date.InvalidCustomDateException;
 import logic.entities.Movie;
 import logic.entities.Screening;
 import logic.entities.Seat;

@@ -1,9 +1,8 @@
 package controller;
 
-import date.CustomDate;
-import date.InvalidCustomDateException;
+import logic.date.CustomDate;
+import logic.date.InvalidCustomDateException;
 import java.util.ArrayList;
-import view.MainView;
 import logic.ScreeningStateContainer;
 import logic.MainLogic;
 import logic.entities.Movie;
@@ -11,15 +10,12 @@ import logic.entities.Screening;
 import java.util.List;
 import javafx.util.Pair;
 import logic.entities.CinemaHall;
-import view.FrameTest;
-import view.TutorialTestTable;
+import view.MainView;
 
 public class Controller {
     
-    private MainView view;
     private MainLogic logic;
-    private FrameTest ftest;
-    private TutorialTestTable ttt;
+    private MainView view;
     
     /* ======================= CONSTRUCTOR ================================= */
 
@@ -32,13 +28,10 @@ public class Controller {
     }
     
     private void createConnections() {
-        //view = new MainView(this);
         logic = new MainLogic(this);
-        /*ftest = new FrameTest(this);
-        ftest.setVisible(true);*/
         
-        ttt = new TutorialTestTable(this);
-        ttt.setVisible(true);
+        view = new MainView(this);
+        view.setVisible(true);
     }
 
     /* ======================= CORE ===================================== */
@@ -120,6 +113,7 @@ public class Controller {
      * @return List containing Seats <row,col> attributes.
      */
     public List getBookedSeats(Screening s) {
+        System.out.println(logic.getBookedSeats(s));
         return logic.getBookedSeats(s);
     }
     
@@ -283,16 +277,6 @@ public class Controller {
         logic.addSeat(s, row, col);
     }
     
-    /* ======================= TEST ===================================== */
-    
-    public void errorMessage(String message){
-        view.displayError(message);
-    }
-    
-    public void printMovieWithoutId(Movie m) {
-        System.out.println("Movie without id:" + logic.getMovieWithoutId(m).toString());
-    }
-    
     // ==================  view  ====================================
     
     public List getMovieTitles() {
@@ -313,6 +297,15 @@ public class Controller {
             names.add(ch.getName());
         }
         return names;
+    }
+    
+    public boolean validateDate(String date) {
+        try {
+            CustomDate.stringToCustomDate(date);
+            return true;
+        } catch (InvalidCustomDateException e) {
+            return false;
+        }
     }
 
 }

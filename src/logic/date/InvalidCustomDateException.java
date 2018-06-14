@@ -1,4 +1,4 @@
-package date;
+package logic.date;
 
 public class InvalidCustomDateException extends Exception{
     

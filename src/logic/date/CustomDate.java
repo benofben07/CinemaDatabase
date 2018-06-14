@@ -1,4 +1,4 @@
-package date;
+package logic.date;
 
 /* FYI
    YMS = YEAR, MONTH, DAY
