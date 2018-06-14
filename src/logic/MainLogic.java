@@ -13,10 +13,9 @@ import logic.entities.Movie;
 import logic.entities.Screening;
 import logic.entities.Seat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import controller.Controller;
+import javafx.util.Pair;
 
 public class MainLogic {
    
@@ -61,19 +60,13 @@ public class MainLogic {
 
     /**
      * Reads from database movies and sold tickets for every movie.
-     * Returns value as a map.
-     * @return Map with parameters <Movie, sold ticket amount>
+     * Returns value as a List containing Pairs.
+     * @return List with Pairs<Movie, sold ticket amount>
      */
-    public Map listMovies() {
-        List<Movie> movies = getMovies();
-        // param <movie, sold ticket amount>
-        Map<Movie, Integer> movieSoldTicket = new HashMap<>();
-        for (Movie m : movies) {
-            movieSoldTicket.put(m, getMovieSoldTicket(m.getId()));
-        }
-        return movieSoldTicket;
+    public List listMovies() { 
+        return addSoldTicketToMovie(getMovies());
     }
-    
+
     // counting sold tickets using daoSeat and daoScreening objects
     private int getMovieSoldTicket(int movieId) {
         // casting to use DAOScreening, DAOSeat specific methods
@@ -137,6 +130,22 @@ public class MainLogic {
         return dm.getMovieWithoutId(m);
     }
     
+    public Movie getByTitle(String title) {
+        List<Movie> movie = ((DAOMovie) daoMovie).getByTitle(title);
+        return movie.get(0);
+    }
+    
+    /* ----- additional function */
+    
+    private List addSoldTicketToMovie(List<Movie> movies) {
+        // param <movie, sold ticket amount>
+        List<Pair<Movie, Integer>> movieSoldTicket = new ArrayList<>();
+        for (Movie m : movies) {
+            movieSoldTicket.add(new Pair(m, getMovieSoldTicket(m.getId())));
+        }
+        return movieSoldTicket;
+    }
+    
     /* ------------------------ CINEMA_HALL ----------------------------- */
 
     /**
@@ -149,6 +158,10 @@ public class MainLogic {
         // casting to use DAOScreening, DAOCinemaHall specific methods
         DAOCinemaHall dch = (DAOCinemaHall) daoCinemaHall;
         return dch.getById(id);
+    }
+    
+    public CinemaHall getByName(String name) {
+        return ((DAOCinemaHall) daoCinemaHall).getByName(name);
     }
     
     /**
@@ -164,17 +177,11 @@ public class MainLogic {
 
     /**
      * Gets every Screening from database first, then get sold ticket to
-     * each. Puts it into a map according to its result.
-     * @return Map with parameters <Screening, sold ticket amount>
+     * each. Puts it into a List containing Pairs according to its result.
+     * @return List with Pairs <Screening, sold ticket amount>
      */
-    public Map listScreenings() {
-        List<Screening> screenings = getScreenings();
-        // param <screening, sold ticket amount>
-        Map<Screening, Integer> screeningSoldTicket = new HashMap<>();
-        for (Screening s : screenings) {
-            screeningSoldTicket.put(s, getScreeningSoldTicket(s.getId()));
-        }
-        return screeningSoldTicket;
+    public List listScreenings() {
+        return addSoldTicketToScreening(getScreenings());
     }
     
     // uses a DAOSeat object to get sold tickets to given Screening
@@ -204,21 +211,33 @@ public class MainLogic {
         return ds.getScreeningById(id);
     }
     
+    /* ----- additional function */
+    
+    private List addSoldTicketToScreening(List<Screening> screenings) {
+        // param <screening, sold ticket amount>
+        List<Pair<Screening, Integer>> screeningSoldTicket = new ArrayList<>();
+        for (Screening s : screenings) {
+            screeningSoldTicket.add(
+                    new Pair(s, getScreeningSoldTicket(s.getId())));
+        }
+        return screeningSoldTicket;
+    }
+    
     /* ------------------------ SEATS --------------------------------- */
 
     /**
      * Reads database for given Screening and collects taken seats
-     * into a Map <row, col> then returns it.
+     * into a List containing Pairs <row, col> then returns it.
      * @param s
      * Screening object
-     * @return Map with param <row, col>
+     * @return List with Pairs, param <row, col>
      */
-    public Map getBookedSeats(Screening s) {
+    public List getBookedSeats(Screening s) {
         List<Seat> seats = getSeats();
         // param<row, col>
-        Map<Integer, Integer> bookedSeats = new HashMap<>();
+        List<Pair<Integer, Integer>> bookedSeats = new ArrayList<>();
         for (Seat seat : seats) {
-            bookedSeats.put(seat.getRowNumber(), seat.getColNumber());
+            bookedSeats.add(new Pair(seat.getRowNumber(), seat.getColNumber()));
         }
         
         return bookedSeats;
@@ -351,6 +370,7 @@ public class MainLogic {
     private boolean checkAgeLimit(int ageLimit, String begin) {
         try {
             CustomDate cd = CustomDate.stringToCustomDate(begin);
+            System.out.println(cd.toString());
             switch (ageLimit) {
                 case 1:
                     // can be screened any time
@@ -403,20 +423,27 @@ public class MainLogic {
     
     /* ======================= FILTERS ===================================== */
 
+    public List filterMoviesByTitle(String title) {
+        // casting to use DAOMovie specific methods
+        return addSoldTicketToMovie(((DAOMovie) daoMovie).getByTitle(title));
+    }
+    
     /**
      * Filters movies with given title arg. Reads from database then 
      * returns matching Movie objects.
      * @param title
      * String to filter with.
-     * @return List containing filtered Movies.
+     * @return List containing filtered Screenings.
      */
     public List filterScreeningByMovie(String title) {
         // casting to use DAOScreening, DAOMovie specific methods
         DAOMovie dm = (DAOMovie) daoMovie;
         DAOScreening ds = (DAOScreening) daoScreening;
         
-        Movie movie = dm.getByTitle(title);
-        return ds.getDataByMovieId(movie.getId());
+        // presuming there are unique titles
+        List<Movie> movie = dm.getByTitle(title);
+        return addSoldTicketToScreening(
+                ds.getDataByMovieId(movie.get(0).getId()));
     }
     
     /**
@@ -431,7 +458,8 @@ public class MainLogic {
         DAOCinemaHall dch = (DAOCinemaHall) daoCinemaHall;
         
         CinemaHall ch = dch.getByName(cinemaHallName);
-        return ds.getScreeningsByCinemaHallId(ch.getId());
+        return addSoldTicketToScreening(
+                ds.getScreeningsByCinemaHallId(ch.getId()));
     }
 
 }

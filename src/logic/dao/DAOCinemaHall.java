@@ -1,14 +1,12 @@
 package logic.dao;
 
-import cinemadatabase.DBInit;
 import logic.entities.CinemaHall;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAOCinemaHall implements DAOGeneral {
+public class DAOCinemaHall extends DAOBase implements DAOGeneral {
 
     public CinemaHall getById(int id) {
         List<CinemaHall> ch = getDataBySQL(
@@ -31,7 +29,7 @@ public class DAOCinemaHall implements DAOGeneral {
     private List getDataBySQL(String sqlStatement) {
         List<CinemaHall> cinemaHalls = new ArrayList<>();
         try {
-            Statement s = DBInit.getStatement();
+            s = getStatement();
             s.execute(sqlStatement);
             ResultSet rs = s.getResultSet();
             while(rs.next()){
@@ -43,6 +41,10 @@ public class DAOCinemaHall implements DAOGeneral {
                     )
                 );
             }
+            
+            rs.close();
+            s.close();
+            closeConnection();
             
         } catch (SQLException e) {
             e.printStackTrace();

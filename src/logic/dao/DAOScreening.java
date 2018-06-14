@@ -1,16 +1,14 @@
 package logic.dao;
 
-import cinemadatabase.DBInit;
 import logic.entities.CinemaHall;
 import logic.entities.Screening;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import logic.MainLogic;
 
-public class DAOScreening implements DAOGeneral{
+public class DAOScreening extends DAOBase implements DAOGeneral{
     
     private final MainLogic logic;
     
@@ -39,7 +37,7 @@ public class DAOScreening implements DAOGeneral{
     private List getDataBySQL(String sqlStatement) {
         List<Screening> screenings = new ArrayList<>();
         try {
-            Statement s = DBInit.getStatement();
+            s = getStatement();
             s.execute(sqlStatement);
             ResultSet rs = s.getResultSet();
             while(rs.next()){
@@ -51,6 +49,9 @@ public class DAOScreening implements DAOGeneral{
                     )
                 );
             }
+            rs.close();
+            s.close();
+            closeConnection();
             
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,7 +86,7 @@ public class DAOScreening implements DAOGeneral{
 
     private void insertData(int m_id, CinemaHall ch, String begin) {
         try {
-            Statement s = DBInit.getStatement();
+            s = getStatement();
             System.out.println("EXECUTING: " + 
                        "INSERT INTO SCREENING (FK_MOVIE_ID, FK_CINEMA_HALL_ID, " + 
                        "BEGIN) VALUES (" + 
@@ -94,6 +95,8 @@ public class DAOScreening implements DAOGeneral{
                       " BEGIN) VALUES (" + 
                        m_id + ", " + ch.getId() + ", \'" + begin + "\')");
             
+            s.close();
+            closeConnection();
         } catch(SQLException e) {
             e.printStackTrace();
         }
@@ -107,9 +110,13 @@ public class DAOScreening implements DAOGeneral{
     @Override
     public void removeData(Object data) {
         try {
-            Statement s = DBInit.getStatement();
+            s = getStatement();
             Screening screening = (Screening) data;
             s.execute("DELETE FROM SCREENING WHERE SCREENING_ID=" + screening.getId());
+            
+            s.close();
+            closeConnection();
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }

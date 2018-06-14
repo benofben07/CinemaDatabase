@@ -1,17 +1,25 @@
 package controller;
 
+import date.CustomDate;
+import date.InvalidCustomDateException;
+import java.util.ArrayList;
 import view.MainView;
 import logic.ScreeningStateContainer;
 import logic.MainLogic;
 import logic.entities.Movie;
 import logic.entities.Screening;
 import java.util.List;
-import java.util.Map;
+import javafx.util.Pair;
+import logic.entities.CinemaHall;
+import view.FrameTest;
+import view.TutorialTestTable;
 
 public class Controller {
     
     private MainView view;
     private MainLogic logic;
+    private FrameTest ftest;
+    private TutorialTestTable ttt;
     
     /* ======================= CONSTRUCTOR ================================= */
 
@@ -24,17 +32,22 @@ public class Controller {
     }
     
     private void createConnections() {
-        view = new MainView(this);
+        //view = new MainView(this);
         logic = new MainLogic(this);
+        /*ftest = new FrameTest(this);
+        ftest.setVisible(true);*/
+        
+        ttt = new TutorialTestTable(this);
+        ttt.setVisible(true);
     }
 
     /* ======================= CORE ===================================== */
 
     /**
      * Calls logic's listMovies() method and returns its return.
-     * @return Map containing Movies
+     * @return List containing Movies and sold ticket pairs.
      */
-    public Map listMovies() {
+    public List listMovies() {
         return logic.listMovies();
     }
     
@@ -51,14 +64,35 @@ public class Controller {
      * was successful or what mistake rose.
      */
     public ScreeningStateContainer newScreening
-        (int movieId, int cinemaHallId, String begin) {
+        (String movieTitle, String hallName, String begin) {
            
-            return logic.addScreening(logic.getMovieById(movieId),
-                                      logic.getCinemaHallById(cinemaHallId),
+            
+            
+            return logic.addScreening(logic.getByTitle(movieTitle),
+                                      logic.getByName(hallName),
                                       begin
                     );
     }
     
+    public Screening screeningFromRaw(String movieTitle, String chName, String begin) {
+        List<Screening> screenings = logic.getScreenings();
+        try {
+            for (Screening s : screenings) {
+                if (s.getMovie().getTitle().equals(movieTitle) &&
+                    s.getCinemaHall().getName().equals(chName) &&
+                    s.getInterval().getBegin().equals(
+                            CustomDate.stringToCustomDate(begin))) {
+
+                    return s;
+                }
+            }
+        } catch (InvalidCustomDateException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return null;
+    }
+        
     /**
      * Removes given screening and returns if it was successful.
      * Unsuccessful action if there were already taken seats to given Screening.
@@ -66,37 +100,42 @@ public class Controller {
      * Screening object
      * @return boolean value if operation was successful.
      */
-    public boolean removeScreening(Screening s) {
-        return logic.removeScreening(s); /*? "Successfully removed." : 
-                                          "Seats already taken.";*/
+    public boolean removeScreening(String movieTitle, String chName, String begin) {
+        return logic.removeScreening(screeningFromRaw(movieTitle, chName, begin));
     }
     
     /**
-     * Returns logic's listScreening() return as a Map
-     * @return Map containins Screenings, and sold tickets.
+     * Returns logic's listScreening() return as a List containing
+     * Pair<Screening, sold ticket> objects.
+     * @return List containins Screenings, and sold ticket pairs.
      */
-    public Map listScreening() {
+    public List listScreening() {
         return logic.listScreenings();
     }
 
     /**
-     * Returns booked Seat objects as a Map represented by Row and Coloumn number.
+     * Returns booked Seat objects as a List represented by Row and Coloumn number
+     * in Pair<row, col> objects.
      * @param s
-     * @return Map containing Seats <row,col> attributes.
+     * @return List containing Seats <row,col> attributes.
      */
-    public Map getBookedSeats(Screening s) {
+    public List getBookedSeats(Screening s) {
         return logic.getBookedSeats(s);
     }
     
     /* ======================= FILTER ===================================== */
 
+    public List filterMoviesByTitle(String title) {
+        return logic.filterMoviesByTitle(title);
+    }
+    
     /**
      * Filters Movies via their title. Matching titles to arg return.
      * @param title
      * Movie title
-     * @return filtered List containing Movies.
+     * @return filtered List containing Screenings.
      */
-    public List filterByMovie(String title) {
+    public List filterScreeningByMovie(String title) {
         return logic.filterScreeningByMovie(title);
     }
     
@@ -104,10 +143,36 @@ public class Controller {
      * Filters CinemaHalls via their respective names.
      * Returns matchgin objects as a List
      * @param name
-     * @return List containig filtered CinemaHalls
+     * @return List containig filtered Screenings
      */
-    public List filterByCinemaHall(String name) {
+    public List filterScreeningByCinemaHall(String name) {
         return logic.filterScreeningByCinemaHall(name);
+    }
+    
+    public List filterScreeningByMovieAndCinemaHall(String movieTitle,
+            String hallName) {
+        List<Pair<Screening, Integer>> movieFiltered = 
+                logic.filterScreeningByMovie(movieTitle);
+        List<Pair<Screening, Integer>> chFiltered = 
+                logic.filterScreeningByCinemaHall(hallName);
+        List<Pair<Screening, Integer>> result = new ArrayList<>();
+        
+        for (Pair<Screening, Integer> pair : movieFiltered) {
+            if (equalsAny(pair, chFiltered)) result.add(pair);
+        }
+        
+        return result;
+    }
+    
+    /* -------- additional methods */
+    
+    private boolean equalsAny(Pair<Screening, Integer> movPair, List<Pair<Screening, Integer>> chFiltered) {
+        for (Pair<Screening, Integer> chPair : chFiltered) {
+            if ( movPair.getKey().equals(chPair.getKey()) &&
+                 movPair.getValue().equals(chPair.getValue())) return true;
+        }
+        
+        return false;
     }
     
     /* ======================= GETTERS ===================================== */
@@ -228,4 +293,26 @@ public class Controller {
         System.out.println("Movie without id:" + logic.getMovieWithoutId(m).toString());
     }
     
+    // ==================  view  ====================================
+    
+    public List getMovieTitles() {
+        List<String> titles = new ArrayList<>();
+        List<Movie> movies = logic.getMovies();
+        
+        for (Movie m : movies) {
+            titles.add(m.getTitle());
+        }
+        return titles;
+    }
+    
+    public List getHallNames() {
+        List<String> names = new ArrayList<>();
+        List<CinemaHall> halls = logic.getCinemaHalls();
+        
+        for (CinemaHall ch : halls) {
+            names.add(ch.getName());
+        }
+        return names;
+    }
+
 }

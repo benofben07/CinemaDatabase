@@ -14,7 +14,7 @@ import logic.ScreeningStateContainer;
 
 public class CinemaDataBase {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         DBInit.setupDB();
         Controller c = new Controller(); 
         

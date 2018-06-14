@@ -1,14 +1,12 @@
 package logic.dao;
 
-import cinemadatabase.DBInit;
 import logic.entities.Movie;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.ArrayList;
 
-public class DAOMovie implements DAOGeneral {
+public class DAOMovie extends DAOBase implements DAOGeneral {
 
     public DAOMovie() {}
     
@@ -33,10 +31,10 @@ public class DAOMovie implements DAOGeneral {
         return mList.get(0);
     }
 
-    public Movie getByTitle(String title) {
+    public List getByTitle(String title) {
         List<Movie> mList = getDataBySQL(
                 "SELECT * FROM MOVIE WHERE TITLE=\'" + title + "\'");
-        return mList.get(0);
+        return mList;
     }
     
     @Override
@@ -49,7 +47,7 @@ public class DAOMovie implements DAOGeneral {
         List<Movie> movies = new ArrayList<>();
         
         try {
-            Statement s = DBInit.getStatement();
+            s = getStatement();
             System.out.println("EXECUTING: " + sqlStatement);
             s.execute(sqlStatement);
             ResultSet rs = s.getResultSet();
@@ -57,6 +55,9 @@ public class DAOMovie implements DAOGeneral {
                 movies.add( movieFromRs(rs) );
             }
             
+            rs.close();
+            s.close();
+            closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -85,13 +86,15 @@ public class DAOMovie implements DAOGeneral {
     public void addData(Object data) {
         
         try {
-            Statement s = DBInit.getStatement();
+            s = getStatement();
             
             StringBuilder sqlStatement = new StringBuilder(
                 "INSERT INTO MOVIE (TITLE, ORIGIN, DUBBED, DIRECTOR, " + 
                 "DESCRIPTION, DURATION, MAX_PLAY, AGE_LIMIT, PICTURE) VALUES (");
             s.execute(createInsert(sqlStatement, (Movie) data));
-            
+
+            s.close();
+            closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -130,11 +133,16 @@ public class DAOMovie implements DAOGeneral {
     
     public int getMaxPlay(Movie m) {
         try {
-            Statement s = DBInit.getStatement();
+            
+            s = getStatement();
             System.out.println("EXECUTING: SELECT MAX_PLAY FROM MOVIE WHERE MOVIE_ID=" + m.getId());
             s.execute("SELECT MAX_PLAY FROM MOVIE WHERE MOVIE_ID=" + m.getId());
             ResultSet rs = s.getResultSet();
             if (rs.next()) return rs.getInt("MAX_PLAY");
+            
+            rs.close();
+            s.close();
+            closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }

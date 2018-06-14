@@ -1,15 +1,13 @@
 package logic.dao;
 
-import cinemadatabase.DBInit;
 import logic.entities.Seat;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import logic.MainLogic;
 
-public class DAOSeat implements DAOGeneral{
+public class DAOSeat extends DAOBase implements DAOGeneral{
 
     private final MainLogic logic;
     
@@ -40,7 +38,7 @@ public class DAOSeat implements DAOGeneral{
         List<Seat> seats = new ArrayList<>();
         
         try {
-            Statement s = DBInit.getStatement();
+            s = getStatement();
             
             s.execute(sqlStatement);
             ResultSet rs = s.getResultSet();
@@ -54,6 +52,10 @@ public class DAOSeat implements DAOGeneral{
                     )
                 );
             }
+            
+            rs.close();
+            s.close();
+            closeConnection();
             
         } catch (SQLException e) {
             e.printStackTrace();
@@ -78,7 +80,7 @@ public class DAOSeat implements DAOGeneral{
         int col = rawData[2];
         
         try {
-            Statement s = DBInit.getStatement();
+            s = getStatement();
             String sqlStatement = new StringBuilder(
                 "INSERT INTO SEAT (FK_SCREENING_ID, ROW_NUM, COL_NUM) VALUES (")
                 .append(screeningId).append(", ")
@@ -88,12 +90,11 @@ public class DAOSeat implements DAOGeneral{
             System.out.println("EXECUTING: " + sqlStatement);
             s.execute(sqlStatement);     
             
+            s.close();
+            closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
-        
-        
     }
 
     /**

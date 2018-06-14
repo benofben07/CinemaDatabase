@@ -3,6 +3,7 @@ package logic.entities;
 import date.CustomDate;
 import date.CustomInterval;
 import date.InvalidCustomDateException;
+import java.util.Objects;
 
 public class Screening {
     private final Movie movie;
@@ -44,6 +45,22 @@ public class Screening {
     
     public void setInterval(CustomInterval interval) {
         this.interval = interval;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        // lazy solution but must be working.
+        return this.id == ((Screening) other).id;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 83 * hash + Objects.hashCode(this.movie);
+        hash = 83 * hash + Objects.hashCode(this.cinemaHall);
+        hash = 83 * hash + this.id;
+        hash = 83 * hash + Objects.hashCode(this.interval);
+        return hash;
     }
     
     @Override

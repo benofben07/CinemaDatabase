@@ -13,6 +13,8 @@ public final class DBInit{
     // cannot be instantiated
     private DBInit() {}
     
+    private static Connection conn;
+    
     /**
      * Sets up database.
      * Creates tables and fills them with data.
@@ -33,6 +35,9 @@ public final class DBInit{
             createTables(s, "setup.sql");
             // fill tables with data
             fillUpTables(s, "insert.sql");
+            
+            s.close();
+            conn.close();
             
         }catch(SQLException e){
             e.printStackTrace();
@@ -90,7 +95,7 @@ public final class DBInit{
      * @throws SQLException
      */
     public static Statement getStatement() throws SQLException{
-        Connection conn = DriverManager.getConnection(
+        conn = DriverManager.getConnection(
             "jdbc:mysql://localhost:3306/test?useUnicode=true" + 
             "&useJDBCCompliantTimezoneShift=true" + 
             "&useLegacyDatetimeCode=false&serverTimezone=UTC");
