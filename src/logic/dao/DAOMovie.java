@@ -48,7 +48,7 @@ public class DAOMovie extends DAOBase implements DAOGeneral {
         
         try {
             s = getStatement();
-            System.out.println("EXECUTING: " + sqlStatement);
+            //System.out.println("EXECUTING: " + sqlStatement);
             s.execute(sqlStatement);
             ResultSet rs = s.getResultSet();
             while(rs.next()){

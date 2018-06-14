@@ -10,7 +10,7 @@ public class SeatButton extends JButton {
     
     private final int row,col;
     private Color color;
-    private Action clicked = new AbstractAction() {
+    private final Action clicked = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
             SeatButton seat = (SeatButton) e.getSource();

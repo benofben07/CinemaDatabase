@@ -181,6 +181,10 @@ public class Controller {
         return logic.getMovies();
     }
     
+    public String getMoviePictureByName(String title) {
+        return logic.getByTitle(title).getPicture();
+    }
+    
     /**
      * Returns max play limit of given Movie object.
      * @param movieRaw

@@ -5,12 +5,23 @@ import view.tablemodels.MovieTableModel;
 import view.booking.SeatBookingFrame;
 import controller.Controller;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.util.Pair;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -32,10 +43,13 @@ import logic.entities.Screening;
 
 public class MainView extends JFrame{
     
+    private static final String BASE_PATH = 
+            "C:\\_Programok\\pt2_másodszor\\CinemaDataBase\\pics\\";
     private JTable table;
-    private Controller c;
+    private final Controller c;
     private JPanel upperPanel;
     private JPanel lowerPanel;
+    private JPanel imagePanel;
     private EntityEnum currentEntity;
     private Screening currentScreening;
     
@@ -153,12 +167,50 @@ public class MainView extends JFrame{
     private void setup(EntityEnum entity, String movieFilter, String hallFilter) {
         currentEntity = entity;
         getContentPane().removeAll();
+        setSize(600, 370);
         setFilterPanel(entity);
         setTablePanel();
         createTable(entity, movieFilter, hallFilter);
-        if (entity != EntityEnum.MOVIE) addRightClickActionToTable();
+        if (entity != EntityEnum.MOVIE) {
+            addRightClickActionToTable();
+        } else {
+            addLeftClickActionToTable();
+        }
         revalidate();
         repaint();
+    }
+    
+    private void addLeftClickActionToTable() {
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent arg0) {
+                if (arg0.getButton() == MouseEvent.BUTTON1){
+                    String title = (String) 
+                            table.getValueAt(table.getSelectedRow(), 0);
+                    displayPicture(c.getMoviePictureByName(title));
+                }
+            }}); 
+    }
+    
+    private void displayPicture(String filePath) {
+        System.out.println(filePath);
+        imagePanel = new JPanel();
+        imagePanel.setPreferredSize(new Dimension(200,370));
+        
+        BufferedImage myPicture = null;
+        try {
+        myPicture = ImageIO.read(
+                new File(BASE_PATH + filePath));
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(lowerPanel, "Poster not found!");
+            return;
+        }
+        JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+        
+        
+        imagePanel.add(picLabel);
+        setSize(800, 370);
+        add(imagePanel, BorderLayout.EAST);
     }
     
     private String[] getClickedScreening(int selectedRow) {
@@ -246,8 +298,11 @@ public class MainView extends JFrame{
         new SeatBookingFrame(this, row, col, bookedSeats).setVisible(true);
     }
     
-    public void bookSeat(int row, int col) {
-        c.addSeat(currentScreening, row, col);
+    
+    public void bookSeat(List<Pair<Integer, Integer>> seats) {
+        seats.forEach((p) -> {
+            c.addSeat(currentScreening, p.getKey(), p.getValue());
+        });
         setup(currentEntity, "", "");
     }
     

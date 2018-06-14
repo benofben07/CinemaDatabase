@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.util.Pair;
 import javax.swing.JButton;
@@ -18,7 +19,7 @@ public class SeatBookingFrame extends JFrame{
     
     private final JFrame parentFrame;
     private JPanel seatPanel, bookPanel;
-    private int row, col;
+    private final int row, col;
     private SeatButton[][] seats;
     private final List<Pair<Integer, Integer>> bookedSeats;
     
@@ -29,7 +30,7 @@ public class SeatBookingFrame extends JFrame{
         this.col = col;
         
         setTitle("Booking");
-        setSize(400,400);
+        setSize(400, 510);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         createButtonPanel(row, col);
         createBookPanel();
@@ -37,18 +38,21 @@ public class SeatBookingFrame extends JFrame{
     
     private void createBookPanel() {
         bookPanel = new JPanel();
+        bookPanel.setPreferredSize(new Dimension(400, 50));
         JButton verify = new JButton("Book seat!");
         verify.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (JOptionPane.showConfirmDialog(seatPanel, "Sure?") == 0) {
+                    List<Pair<Integer, Integer>> bookedSeats = new ArrayList<>();
                     for (int i = 0; i < row; ++i) {
                         for (int j = 0; j < col; ++j) {
                             if (seats[i][j].getColor().equals(Color.YELLOW)) {
-                                ((MainView)parentFrame).bookSeat(i+1,j+1);
+                                bookedSeats.add(new Pair(i+1,j+1));
                             }
                         }
                     }
+                    ((MainView) parentFrame).bookSeat(bookedSeats);
                     JOptionPane.showMessageDialog(seatPanel, "Successfully booked!");
                     disposeWindow();
                 }
@@ -64,7 +68,7 @@ public class SeatBookingFrame extends JFrame{
     
     private void createButtonPanel(int row, int col) {
         seatPanel = new JPanel(new GridLayout(row, col));
-        seatPanel.setPreferredSize(new Dimension(300, 400));
+        seatPanel.setPreferredSize(new Dimension(400, 400));
         seats = new SeatButton[row][col];
         
         for (int i = 0; i < row; ++i) {
@@ -72,7 +76,8 @@ public class SeatBookingFrame extends JFrame{
                 seats[i][j] = new SeatButton(
                         i + 1, j + 1, taken(i+1,j+1) ? Color.RED : Color.GREEN);
                 
-                seatPanel.add(seats[i][j]);
+                //seats[i][j].setPreferredSize(new Dimension(10*row, 10*col));
+                seatPanel.add(seats[i][j], BorderLayout.PAGE_START);
             }
         }
         

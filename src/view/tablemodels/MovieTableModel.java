@@ -15,7 +15,6 @@ public class MovieTableModel extends AbstractTableModel{
         this.colNames = new String[] {"Title", "Origin", "Director", "Description",
             "Dubbed", "Duration", "Age limit", "Sold ticket"};
         this.movies = movies;
-        printMovies();
     }
     
     private void printMovies() {
@@ -43,7 +42,6 @@ public class MovieTableModel extends AbstractTableModel{
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        System.out.println("Movies: " + movies.toString());
         Movie m = movies.get(rowIndex).getKey();
         switch(columnIndex) {
             case 0:
