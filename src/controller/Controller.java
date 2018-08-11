@@ -16,20 +16,13 @@ public class Controller {
     
     private MainLogic logic;
     private MainView view;
-    
-    /* ======================= CONSTRUCTOR ================================= */
 
-    /**
-     * Creates controller.
-     * Also creates a MainLogic and a MainView objects and connects them via itself.
-     */
     public Controller() {
         createConnections();
     }
     
     private void createConnections() {
-        logic = new MainLogic(this);
-        
+        logic = new MainLogic(this);        
         view = new MainView(this);
         view.setVisible(true);
     }
@@ -45,37 +38,30 @@ public class Controller {
     }
     
     /**
-     *
-     * @param movieId
-     * Movie ID
-     * @param cinemaHallId
-     * CinemaHall ID
      * @param begin
      * CustomDate object in raw string format.
      * For example '2010-12-21 16:25:00'
+     *
      * @return ScreeningStateContainer object to indicate whether operation
-     * was successful or what mistake rose.
+     * was successful or what mistake arose.
      */
     public ScreeningStateContainer newScreening
         (String movieTitle, String hallName, String begin) {
-           
             
-            
-            return logic.addScreening(logic.getByTitle(movieTitle),
-                                      logic.getByName(hallName),
-                                      begin
-                    );
+        return logic.addScreening(logic.getByTitle(movieTitle),
+                                  logic.getByName(hallName),
+                                  begin);
     }
     
-    public Screening screeningFromRaw(String movieTitle, String chName, String begin) {
+    public Screening screeningFromRaw(String movieTitle, String chName,
+                                      String begin) {
         List<Screening> screenings = logic.getScreenings();
         try {
             for (Screening s : screenings) {
                 if (s.getMovie().getTitle().equals(movieTitle) &&
                     s.getCinemaHall().getName().equals(chName) &&
-                    s.getInterval().getBegin().equals(
-                            CustomDate.stringToCustomDate(begin))) {
-
+                    s.getInterval().getBegin()
+                            .equals(CustomDate.stringToCustomDate(begin))) {
                     return s;
                 }
             }
@@ -89,8 +75,6 @@ public class Controller {
     /**
      * Removes given screening and returns if it was successful.
      * Unsuccessful action if there were already taken seats to given Screening.
-     * @param s
-     * Screening object
      * @return boolean value if operation was successful.
      */
     public boolean removeScreening(String movieTitle, String chName, String begin) {
@@ -307,7 +291,7 @@ public class Controller {
         try {
             CustomDate.stringToCustomDate(date);
             return true;
-        } catch (InvalidCustomDateException e) {
+        } catch (Exception e) {
             return false;
         }
     }

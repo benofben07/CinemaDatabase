@@ -13,7 +13,7 @@ public class MovieTableModel extends AbstractTableModel{
     
     public MovieTableModel(List movies) {
         this.colNames = new String[] {"Title", "Origin", "Director", "Description",
-            "Dubbed", "Duration", "Age limit", "Sold ticket"};
+            "Dubbed", "Duration", "Max Play", "Age limit", "Sold ticket"};
         this.movies = movies;
     }
     
@@ -57,8 +57,10 @@ public class MovieTableModel extends AbstractTableModel{
             case 5:
                 return m.getDuration();
             case 6:
-                return m.getAgeLimit();
+                return m.getMaxPlay();
             case 7:
+                return m.getAgeLimit();
+            case 8:
                 return movies.get(rowIndex).getValue();
             default:
                 return 0;

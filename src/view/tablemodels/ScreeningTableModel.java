@@ -13,7 +13,7 @@ public class ScreeningTableModel extends AbstractTableModel{
     
     public ScreeningTableModel(List screenings) {
         this.colNames = new String[] {"Movie title", "Hall name", "Begin",
-                "Sold ticket"};
+                "Available ticket"};
         this.screenings = screenings;
     }
     
@@ -45,7 +45,7 @@ public class ScreeningTableModel extends AbstractTableModel{
             case 2:
                 return s.getInterval().getBegin().toString();
             case 3:
-                return screenings.get(rowIndex).getValue();
+                return s.getAllSpaces() - screenings.get(rowIndex).getValue();
             default:
                 return 0;
         }

@@ -35,7 +35,7 @@ public class Screening {
         return cinemaHall;
     }
 
-    public int getFreeSpaces() {
+    public int getAllSpaces() {
         return cinemaHall.getNumOfCols() * cinemaHall.getNumOfRows();
     }
 

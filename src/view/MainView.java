@@ -5,10 +5,7 @@ import view.tablemodels.MovieTableModel;
 import view.booking.SeatBookingFrame;
 import controller.Controller;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -203,6 +200,7 @@ public class MainView extends JFrame{
                 new File(BASE_PATH + filePath));
         } catch (IOException e) {
             JOptionPane.showMessageDialog(lowerPanel, "Poster not found!");
+            if (getContentPane().getWidth() > 600 ) setup(currentEntity, "", "");
             return;
         }
         JLabel picLabel = new JLabel(new ImageIcon(myPicture));
