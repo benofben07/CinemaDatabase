@@ -35,15 +35,16 @@ public class CinemaService {
         
     /* ------------------------- MOVIE ----------------------------- */
 
-    public List getMovies() {
+    public List<Movie> getMovies() {
         return daoMovie.getData();
     }
 
     /**
-     * Reads movies and sold tickets from database for every movie.
+     * Gets all movies and solt tickets to them as a list with Pairs.
+     * 
      * @return List with Pairs<Movie, sold ticket amount>
      */
-    public List listMovies() { 
+    public List<Pair<Movie, Integer>> getMoviesWithSoldTickets() { 
         return addSoldTicketToMovie(getMovies());
     }
 
@@ -84,6 +85,7 @@ public class CinemaService {
     
     /**
      * Searches for given Movie via its id in database then returns it.
+     * 
      * @param id
      * Movie id
      * @return Movie object
@@ -96,6 +98,7 @@ public class CinemaService {
     
     /**
      * Gets ID for a Movie object and returs completed object.
+     * 
      * @param m
      * Movie without id (defaultly set to -1)
      * @return complete Movie object with id
@@ -128,34 +131,35 @@ public class CinemaService {
         return dch.getById(id);
     }
     
-    public CinemaHall getByName(String name) {
+    public CinemaHall getCinemaHallByName(String name) {
         return ((DAOCinemaHall) daoCinemaHall).getByName(name);
     }
     
-    public List getCinemaHalls() {
+    public List<CinemaHall> getCinemaHalls() {
         return daoCinemaHall.getData();
     }
     
     /* ------------------------ SCREENING ------------------------------ */
 
     /**
-     * Gets every Screening from database first, then get sold ticket to
-     * each.
+     * Gets every Screening with their respective sold ticket amount.
      * 
      * @return List with Pairs <Screening, sold ticket amount>
      */
-    public List listScreenings() {
+    public List<Pair<Screening, Integer>> getScreeningsWithSoldTickets() {
         return addSoldTicketToScreening(getScreenings());
     }
     
-    // uses a DAOSeat object to get sold tickets to given Screening
+    /**
+     * @return sold tickets to given Screening
+     */
     private int getScreeningSoldTicket(int screeningId) {
         // casting to use DAOSeat specific methods
         final DAOSeat dSeat = (DAOSeat) daoSeat;
         return dSeat.getSeatsByScreening(screeningId).size();
     }
     
-    public List getScreenings() {
+    public List<Screening> getScreenings() {
         return daoScreening.getData();
     }
     
@@ -170,10 +174,10 @@ public class CinemaService {
      */
     private List<Pair<Screening, Integer>> addSoldTicketToScreening(
             List<Screening> screenings) {
-        final List<Pair<Screening, Integer>> screeningSoldTicket = new ArrayList<>();
-        screenings.forEach(s -> screeningSoldTicket
+        final List<Pair<Screening, Integer>> screeningAndSoldTicket = new ArrayList<>();
+        screenings.forEach(s -> screeningAndSoldTicket
                 .add(new Pair(s, getScreeningSoldTicket(s.getId()))));
-        return screeningSoldTicket;
+        return screeningAndSoldTicket;
     }
     
     /* ------------------------ SEATS --------------------------------- */
@@ -190,7 +194,7 @@ public class CinemaService {
         return bookedSeats;
     }
     
-    public List getSeats() {
+    public List<Seat> getSeats() {
         return daoSeat.getData();
     }
     
@@ -348,10 +352,11 @@ public class CinemaService {
                 .stream().map(Pair::getKey).collect(Collectors.toList());
     }
     
+    // TODO check if deez nuts good
     /**
      * @return List containing filtered Screenings.
      */
-    public List<Movie> filterScreeningByMovie(String title) {
+    public List<Pair<Screening, Integer>> filterScreeningByMovie(String title) {
         // casting to use DAOScreening, DAOMovie specific methods
         final DAOMovie dm = (DAOMovie) daoMovie;
         final DAOScreening ds = (DAOScreening) daoScreening;
@@ -363,7 +368,7 @@ public class CinemaService {
     /**
      * @return List containing filtered CinemaHalls.
      */
-    public List filterScreeningByCinemaHall(String cinemaHallName) {
+    public List<Pair<Screening, Integer>> filterScreeningByCinemaHall(String cinemaHallName) {
         // casting to use DAOScreening, DAOMovie specific methods
         DAOScreening ds = (DAOScreening) daoScreening;
         DAOCinemaHall dch = (DAOCinemaHall) daoCinemaHall;

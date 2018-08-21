@@ -1,20 +1,16 @@
 package controller;
 
-import logic.date.CustomDate;
-import logic.date.InvalidCustomDateException;
-import java.util.ArrayList;
-import logic.ScreeningStateContainer;
-import logic.CinemaService;
-import logic.entities.Movie;
-import logic.entities.Screening;
+import logic.date.*;
+import logic.*;
+import logic.entities.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 import javafx.util.Pair;
-import logic.entities.CinemaHall;
 import view.MainView;
 
 public class CinemaController {
-    
-    private CinemaService logic;
+    private CinemaService service;
     private MainView view;
 
     public CinemaController() {
@@ -22,7 +18,7 @@ public class CinemaController {
     }
     
     private void createConnections() {
-        logic = new CinemaService();        
+        service = new CinemaService();        
         view = new MainView(this);
         view.setVisible(true);
     }
@@ -30,11 +26,10 @@ public class CinemaController {
     /* ======================= CORE ===================================== */
 
     /**
-     * Calls logic's listMovies() method and returns its return.
      * @return List containing Movies and sold ticket pairs.
      */
-    public List listMovies() {
-        return logic.listMovies();
+    public List<Pair<Movie, Integer>> listMovies() {
+        return service.getMoviesWithSoldTickets();
     }
     
     /**
@@ -48,14 +43,14 @@ public class CinemaController {
     public ScreeningStateContainer newScreening
         (String movieTitle, String hallName, String begin) {
             
-        return logic.addScreening(logic.getByTitle(movieTitle),
-                                  logic.getByName(hallName),
+        return service.addScreening(service.getByTitle(movieTitle),
+                                  service.getCinemaHallByName(hallName),
                                   begin);
     }
     
     public Screening screeningFromRaw(String movieTitle, String chName,
                                       String begin) {
-        final List<Screening> screenings = logic.getScreenings();
+        final List<Screening> screenings = service.getScreenings();
         try {
             for (Screening s : screenings) {
                 if (s.getMovie().getTitle().equals(movieTitle) &&
@@ -75,19 +70,21 @@ public class CinemaController {
     /**
      * Removes given screening and returns if it was successful.
      * Unsuccessful action if there were already taken seats to given Screening.
+     * 
      * @return boolean value if operation was successful.
      */
     public boolean removeScreening(String movieTitle, String chName, String begin) {
-        return logic.removeScreening(screeningFromRaw(movieTitle, chName, begin));
+        return service.removeScreening(screeningFromRaw(movieTitle, chName, begin));
     }
     
     /**
      * Returns logic's listScreening() return as a List containing
      * Pair<Screening, sold ticket> objects.
+     * 
      * @return List containins Screenings, and sold ticket pairs.
      */
-    public List listScreening() {
-        return logic.listScreenings();
+    public List<Pair<Screening, Integer>> listScreening() {
+        return service.getScreeningsWithSoldTickets();
     }
 
     /**
@@ -97,13 +94,13 @@ public class CinemaController {
      * @return List containing Seats <row,col> attributes.
      */
     public List getBookedSeats(Screening s) {
-        return logic.getBookedSeats(s);
+        return service.getBookedSeats(s);
     }
     
     /* ======================= FILTER ===================================== */
 
     public List filterMoviesByTitle(String title) {
-        return logic.filterMoviesByTitle(title);
+        return service.filterMoviesByTitle(title);
     }
     
     /**
@@ -112,31 +109,30 @@ public class CinemaController {
      * Movie title
      * @return filtered List containing Screenings.
      */
-    public List filterScreeningByMovie(String title) {
-        return logic.filterScreeningByMovie(title);
+    public List<Pair<Screening, Integer>> filterScreeningByMovie(String title) {
+        return service.filterScreeningByMovie(title);
     }
     
     /**
      * Filters CinemaHalls via their respective names.
-     * Returns matchgin objects as a List
-     * @param name
-     * @return List containig filtered Screenings
+     * 
+     * @return matching objects as a List
      */
-    public List filterScreeningByCinemaHall(String name) {
-        return logic.filterScreeningByCinemaHall(name);
+    public List<Pair<Screening, Integer>> filterScreeningByCinemaHall(String name) {
+        return service.filterScreeningByCinemaHall(name);
     }
     
-    public List filterScreeningByMovieAndCinemaHall(String movieTitle,
+    // TODO change in logic?
+    public List<Pair<Screening, Integer>> filterScreeningByMovieAndCinemaHall(String movieTitle,
             String hallName) {
         final List<Pair<Screening, Integer>> movieFiltered = 
-                logic.filterScreeningByMovie(movieTitle);
+                filterScreeningByMovie(movieTitle);
         final List<Pair<Screening, Integer>> chFiltered = 
-                logic.filterScreeningByCinemaHall(hallName);
-        final List<Pair<Screening, Integer>> result = new ArrayList<>();
+                filterScreeningByCinemaHall(hallName);
         
-        
-        movieFiltered.stream().filter(pair -> equalsAny(pair, chFiltered))
-                .forEach(result::add);
+        final List<Pair<Screening, Integer>> result = movieFiltered.stream()
+            .filter(pair -> equalsAny(pair, chFiltered))
+            .collect(Collectors.toList());
              
         return result;
     }
@@ -151,11 +147,11 @@ public class CinemaController {
     /* ------------------------- MOVIE ----------------------------- */
 
     public List getMovies() {
-        return logic.getMovies();
+        return service.getMovies();
     }
     
     public String getMoviePictureByName(String title) {
-        return logic.getByTitle(title).getPicture();
+        return service.getByTitle(title).getPicture();
     }
     
     /**
@@ -165,11 +161,11 @@ public class CinemaController {
      * For example 'Title,English,David Yates'.
      */
     public int getMovieMaxPlay(String movieRaw) {
-        return logic.getMovieMaxPlay(movieRaw);
+        return service.getMovieMaxPlay(movieRaw);
     }
 
     public Movie getMovieById(int id) {
-        return logic.getMovieById(id);
+        return service.getMovieById(id);
     }
     
     /* ------------------------ CINEMA_HALL ----------------------------- */
@@ -179,7 +175,7 @@ public class CinemaController {
      * @return List containing CinemaHall objects.
      */
     public List getCinemaHalls() {
-        return logic.getCinemaHalls();
+        return service.getCinemaHalls();
     }
     
     /**
@@ -188,23 +184,23 @@ public class CinemaController {
      * CinemaHall ID.
      */
     public CinemaHall getCHById(int id) {
-        return logic.getCinemaHallById(id);
+        return service.getCinemaHallById(id);
     }
     
     /* ------------------------ SCREENING ------------------------------ */
 
     public List getScreenings(){
-        return logic.getScreenings();
+        return service.getScreenings();
     }
     
     public Screening getScreeningById(int id) {
-        return logic.getScreeningById(id);
+        return service.getScreeningById(id);
     }
     
     /* ------------------------ SEATS ---------------------------------- */
 
     public List getSeats() {
-        return logic.getSeats();
+        return service.getSeats();
     }
     
     /* ======================= SETTERS ===================================== */
@@ -214,28 +210,28 @@ public class CinemaController {
      *                   "Ez egy egesz jo dolog", 300, 5, 12, "soon")
      */
     public void addMovie(Movie m) {
-        logic.addMovies(m);
+        service.addMovies(m);
     }
     
     /**
      * Adds to geiven Screening a Seat representated by its row and coloum number.
      */
     public void addSeat(Screening s, int row, int col) {
-        logic.addSeat(s, row, col);
+        service.addSeat(s, row, col);
     }
     
     // ==================  VIEW  ====================================
     
     public List getMovieTitles() {
         final List<String> titles = new ArrayList<>();
-        final List<Movie> movies = logic.getMovies();
+        final List<Movie> movies = service.getMovies();
         movies.forEach(m -> titles.add(m.getTitle()));
         return titles;
     }
     
     public List getHallNames() {
         final List<String> names = new ArrayList<>();
-        final List<CinemaHall> halls = logic.getCinemaHalls();
+        final List<CinemaHall> halls = service.getCinemaHalls();
         halls.forEach(ch -> names.add(ch.getName()));
         return names;
     }
@@ -248,5 +244,4 @@ public class CinemaController {
             return false;
         }
     }
-
 }

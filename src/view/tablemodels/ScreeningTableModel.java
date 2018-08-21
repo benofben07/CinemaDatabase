@@ -6,12 +6,10 @@ import javax.swing.table.AbstractTableModel;
 import logic.entities.Screening;
 
 public class ScreeningTableModel extends AbstractTableModel{
-
     private List<Pair<Screening, Integer>> screenings;
     private final String[] colNames;
     
-    
-    public ScreeningTableModel(List screenings) {
+    public ScreeningTableModel(List<Pair<Screening, Integer>> screenings) {
         this.colNames = new String[] {"Movie title", "Hall name", "Begin",
                 "Available ticket"};
         this.screenings = screenings;

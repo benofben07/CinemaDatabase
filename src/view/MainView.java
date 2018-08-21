@@ -40,7 +40,7 @@ import logic.entities.Screening;
 
 public class MainView extends JFrame{
     
-    private static final String BASE_PATH = 
+    private static final String BASE_POSTER_PATH = 
             "C:\\_Programok\\pt2_másodszor\\CinemaDataBase\\pics\\";
     private JTable table;
     private final CinemaController c;
@@ -81,7 +81,6 @@ public class MainView extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 setup(EntityEnum.CINEMA_HALL, "", "");
-                
             }
         });
         newScreening.addActionListener(new ActionListener() {
@@ -134,6 +133,7 @@ public class MainView extends JFrame{
             display("Invalid date! Correct form: \'yyyy-mm-dd hh:mm:ss\'");
             return;
         }
+        
         ScreeningStateContainer state = c.newScreening(movieTitle, hallName, begin);
         display(state.toString());
     }
@@ -195,14 +195,13 @@ public class MainView extends JFrame{
         BufferedImage myPicture = null;
         try {
         myPicture = ImageIO.read(
-                new File(BASE_PATH + filePath));
+                new File(BASE_POSTER_PATH + filePath));
         } catch (IOException e) {
             JOptionPane.showMessageDialog(lowerPanel, "Poster not found!");
             if (getContentPane().getWidth() > 600 ) setup(currentEntity, "", "");
             return;
         }
         JLabel picLabel = new JLabel(new ImageIcon(myPicture));
-        
         
         imagePanel.add(picLabel);
         setSize(800, 370);
@@ -255,7 +254,6 @@ public class MainView extends JFrame{
             }
         });
         
-        
         popupMenu.addPopupMenuListener(new PopupMenuListener() {
 
             @Override
@@ -276,13 +274,11 @@ public class MainView extends JFrame{
             @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
                 // TODO Auto-generated method stub
-
             }
         });  
         popupMenu.add(deleteItem);
@@ -293,7 +289,6 @@ public class MainView extends JFrame{
     private void createSeatWindow(int row, int col, List bookedSeats) {
         new SeatBookingFrame(this, row, col, bookedSeats).setVisible(true);
     }
-    
     
     public void bookSeat(List<Pair<Integer, Integer>> seats) {
         seats.forEach(p -> c.addSeat(currentScreening, p.getKey(), p.getValue()));
@@ -399,5 +394,4 @@ public class MainView extends JFrame{
         
         setup(currentEntity, movieFilter, hallFilter);
     }
-
 }

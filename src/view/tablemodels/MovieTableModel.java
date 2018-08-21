@@ -10,15 +10,14 @@ public class MovieTableModel extends AbstractTableModel{
     private List<Pair<Movie, Integer>> movies;
     private final String[] colNames;
  
-    
-    public MovieTableModel(List movies) {
+    public MovieTableModel(List<Pair<Movie, Integer>> movies) {
         this.colNames = new String[] {"Title", "Origin", "Director", "Description",
             "Dubbed", "Duration", "Max Play", "Age limit", "Sold ticket"};
         this.movies = movies;
     }
     
     private void printMovies() {
-        movies.forEach((p) -> {
+        movies.forEach(p -> {
             System.out.println("key:" + p.getKey() + "value: " + p.getValue());
         });
     }
