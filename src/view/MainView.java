@@ -3,7 +3,7 @@ package view;
 import view.tablemodels.ScreeningTableModel;
 import view.tablemodels.MovieTableModel;
 import view.booking.SeatBookingFrame;
-import controller.Controller;
+import controller.CinemaController;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -43,17 +43,15 @@ public class MainView extends JFrame{
     private static final String BASE_PATH = 
             "C:\\_Programok\\pt2_másodszor\\CinemaDataBase\\pics\\";
     private JTable table;
-    private final Controller c;
+    private final CinemaController c;
     private JPanel upperPanel;
     private JPanel lowerPanel;
     private JPanel imagePanel;
     private EntityEnum currentEntity;
     private Screening currentScreening;
     
-    public MainView(Controller c) {
-        
+    public MainView(CinemaController c) {
         this.c = c;
-        
         setTitle("CinemaCity Enhanced Edition");
         setSize(600, 370);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -298,9 +296,7 @@ public class MainView extends JFrame{
     
     
     public void bookSeat(List<Pair<Integer, Integer>> seats) {
-        seats.forEach((p) -> {
-            c.addSeat(currentScreening, p.getKey(), p.getValue());
-        });
+        seats.forEach(p -> c.addSeat(currentScreening, p.getKey(), p.getValue()));
         setup(currentEntity, "", "");
     }
     

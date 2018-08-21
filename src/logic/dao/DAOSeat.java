@@ -5,13 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import logic.MainLogic;
+import logic.CinemaService;
 
 public class DAOSeat extends DAOBase implements DAOGeneral{
 
-    private final MainLogic logic;
+    private final CinemaService logic;
     
-    public DAOSeat (MainLogic l) {
+    public DAOSeat (CinemaService l) {
         this.logic = l;
     }
     

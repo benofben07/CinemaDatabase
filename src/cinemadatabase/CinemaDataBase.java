@@ -1,11 +1,11 @@
 package cinemadatabase;
 
-import controller.Controller;
+import controller.CinemaController;
 
 public class CinemaDataBase {
 
     public static void main(String[] args) throws InterruptedException {
         DBInit.setupDB();
-        Controller c = new Controller(); 
+        CinemaController c = new CinemaController(); 
     }
 }

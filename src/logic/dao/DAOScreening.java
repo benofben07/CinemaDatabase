@@ -6,13 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import logic.MainLogic;
+import logic.CinemaService;
 
 public class DAOScreening extends DAOBase implements DAOGeneral{
     
-    private final MainLogic logic;
+    private final CinemaService logic;
     
-    public DAOScreening(MainLogic logic) {
+    public DAOScreening(CinemaService logic) {
         this.logic = logic;
     }
     

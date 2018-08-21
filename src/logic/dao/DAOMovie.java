@@ -31,10 +31,10 @@ public class DAOMovie extends DAOBase implements DAOGeneral {
         return mList.get(0);
     }
 
-    public List getByTitle(String title) {
+    public Movie getByTitle(String title) {
         List<Movie> mList = getDataBySQL(
                 "SELECT * FROM MOVIE WHERE TITLE=\'" + title + "\'");
-        return mList;
+        return mList.get(0);
     }
     
     @Override

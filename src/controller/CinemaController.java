@@ -4,7 +4,7 @@ import logic.date.CustomDate;
 import logic.date.InvalidCustomDateException;
 import java.util.ArrayList;
 import logic.ScreeningStateContainer;
-import logic.MainLogic;
+import logic.CinemaService;
 import logic.entities.Movie;
 import logic.entities.Screening;
 import java.util.List;
@@ -12,17 +12,17 @@ import javafx.util.Pair;
 import logic.entities.CinemaHall;
 import view.MainView;
 
-public class Controller {
+public class CinemaController {
     
-    private MainLogic logic;
+    private CinemaService logic;
     private MainView view;
 
-    public Controller() {
+    public CinemaController() {
         createConnections();
     }
     
     private void createConnections() {
-        logic = new MainLogic(this);        
+        logic = new CinemaService();        
         view = new MainView(this);
         view.setVisible(true);
     }
@@ -55,7 +55,7 @@ public class Controller {
     
     public Screening screeningFromRaw(String movieTitle, String chName,
                                       String begin) {
-        List<Screening> screenings = logic.getScreenings();
+        final List<Screening> screenings = logic.getScreenings();
         try {
             for (Screening s : screenings) {
                 if (s.getMovie().getTitle().equals(movieTitle) &&
@@ -97,7 +97,6 @@ public class Controller {
      * @return List containing Seats <row,col> attributes.
      */
     public List getBookedSeats(Screening s) {
-        System.out.println(logic.getBookedSeats(s));
         return logic.getBookedSeats(s);
     }
     
@@ -129,38 +128,28 @@ public class Controller {
     
     public List filterScreeningByMovieAndCinemaHall(String movieTitle,
             String hallName) {
-        List<Pair<Screening, Integer>> movieFiltered = 
+        final List<Pair<Screening, Integer>> movieFiltered = 
                 logic.filterScreeningByMovie(movieTitle);
-        List<Pair<Screening, Integer>> chFiltered = 
+        final List<Pair<Screening, Integer>> chFiltered = 
                 logic.filterScreeningByCinemaHall(hallName);
-        List<Pair<Screening, Integer>> result = new ArrayList<>();
+        final List<Pair<Screening, Integer>> result = new ArrayList<>();
         
-        for (Pair<Screening, Integer> pair : movieFiltered) {
-            if (equalsAny(pair, chFiltered)) result.add(pair);
-        }
         
+        movieFiltered.stream().filter(pair -> equalsAny(pair, chFiltered))
+                .forEach(result::add);
+             
         return result;
     }
     
-    /* -------- additional methods */
-    
-    private boolean equalsAny(Pair<Screening, Integer> movPair, List<Pair<Screening, Integer>> chFiltered) {
-        for (Pair<Screening, Integer> chPair : chFiltered) {
-            if ( movPair.getKey().equals(chPair.getKey()) &&
-                 movPair.getValue().equals(chPair.getValue())) return true;
-        }
-        
-        return false;
+    private boolean equalsAny(Pair<Screening, Integer> movPair, 
+                              List<Pair<Screening, Integer>> chFiltered) {
+        return chFiltered.stream().anyMatch(chPair -> (
+                movPair.getKey().equals(chPair.getKey()) &&
+                movPair.getValue().equals(chPair.getValue())));
     }
-    
-    /* ======================= GETTERS ===================================== */
-    
+        
     /* ------------------------- MOVIE ----------------------------- */
 
-    /**
-     * Returns all Movie object in a List
-     * @return List containig Movies
-     */
     public List getMovies() {
         return logic.getMovies();
     }
@@ -174,18 +163,11 @@ public class Controller {
      * @param movieRaw
      * Expects a movie represented in raw format.
      * For example 'Title,English,David Yates'.
-     * @return
      */
     public int getMovieMaxPlay(String movieRaw) {
         return logic.getMovieMaxPlay(movieRaw);
     }
-    
-    /**
-     * Returns Movie from database with given ID.
-     * @param id
-     * Movie id
-     * @return Movie object with given ID 
-     */
+
     public Movie getMovieById(int id) {
         return logic.getMovieById(id);
     }
@@ -205,36 +187,22 @@ public class Controller {
      * @param id
      * CinemaHall ID.
      */
-    public void getCHById(int id) {
-        System.out.println(logic.getCinemaHallById(id).toString());
+    public CinemaHall getCHById(int id) {
+        return logic.getCinemaHallById(id);
     }
     
     /* ------------------------ SCREENING ------------------------------ */
 
-    /**
-     * Returns all Screening object in a List.
-     * @return List containing Screening objects.
-     */
     public List getScreenings(){
         return logic.getScreenings();
     }
     
-    /**
-     * Returns Screening object with given ID.
-     * @param id
-     * Screening ID
-     * @return Screening object.
-     */
     public Screening getScreeningById(int id) {
         return logic.getScreeningById(id);
     }
     
     /* ------------------------ SEATS ---------------------------------- */
 
-    /**
-     * Returns all Seats from database in a List.
-     * @return List containing Seat objects.
-     */
     public List getSeats() {
         return logic.getSeats();
     }
@@ -242,48 +210,33 @@ public class Controller {
     /* ======================= SETTERS ===================================== */
 
     /**
-     * Adds given Movie to database.
-     * @param m
-     * Movie object.
+     * for example Movie("Bleach", "Japo", true, "Acsikawa",
+     *                   "Ez egy egesz jo dolog", 300, 5, 12, "soon")
      */
     public void addMovie(Movie m) {
         logic.addMovies(m);
-        /* for example new Movie("Bleach", "Japo", true, 
-                "Acsikawa", "Ez egy egesz jo dolog", 300, 5, 12, "soon")*/
     }
     
     /**
      * Adds to geiven Screening a Seat representated by its row and coloum number.
-     * @param s
-     * Screening object.
-     * @param row
-     * Row number.
-     * @param col
-     * Coloumn number.
      */
     public void addSeat(Screening s, int row, int col) {
         logic.addSeat(s, row, col);
     }
     
-    // ==================  view  ====================================
+    // ==================  VIEW  ====================================
     
     public List getMovieTitles() {
-        List<String> titles = new ArrayList<>();
-        List<Movie> movies = logic.getMovies();
-        
-        for (Movie m : movies) {
-            titles.add(m.getTitle());
-        }
+        final List<String> titles = new ArrayList<>();
+        final List<Movie> movies = logic.getMovies();
+        movies.forEach(m -> titles.add(m.getTitle()));
         return titles;
     }
     
     public List getHallNames() {
-        List<String> names = new ArrayList<>();
-        List<CinemaHall> halls = logic.getCinemaHalls();
-        
-        for (CinemaHall ch : halls) {
-            names.add(ch.getName());
-        }
+        final List<String> names = new ArrayList<>();
+        final List<CinemaHall> halls = logic.getCinemaHalls();
+        halls.forEach(ch -> names.add(ch.getName()));
         return names;
     }
     
