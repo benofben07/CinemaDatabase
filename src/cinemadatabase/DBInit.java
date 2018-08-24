@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public final class DBInit{
     
-    // cannot be instantiated
+    // don't instantiate
     private DBInit() {}
     
     private static Connection conn;

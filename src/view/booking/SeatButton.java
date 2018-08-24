@@ -13,7 +13,7 @@ public class SeatButton extends JButton {
     private final Action clicked = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            SeatButton seat = (SeatButton) e.getSource();
+            final SeatButton seat = (SeatButton) e.getSource();
             System.out.println(seat.getRow() + ", " + seat.getCol());
             if (seat.color.equals(Color.YELLOW)) {
                 seat.color = Color.GREEN;
@@ -51,7 +51,4 @@ public class SeatButton extends JButton {
     public void setColor(Color color) {
         this.color = color;
     }
-    
-    
-    
 }

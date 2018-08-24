@@ -213,7 +213,7 @@ public class CinemaService {
     public ScreeningStateContainer addScreening(Movie m, CinemaHall ch,
                                                 String begin) {
         // checking w/ constraints
-        ScreeningStateContainer state = new ScreeningStateContainer(
+        final ScreeningStateContainer state = new ScreeningStateContainer(
                 ScreeningAdditionEnum.SUCCES);
         
         if ( !checkMaxPlay(m) ) {
@@ -370,10 +370,10 @@ public class CinemaService {
      */
     public List<Pair<Screening, Integer>> filterScreeningByCinemaHall(String cinemaHallName) {
         // casting to use DAOScreening, DAOMovie specific methods
-        DAOScreening ds = (DAOScreening) daoScreening;
-        DAOCinemaHall dch = (DAOCinemaHall) daoCinemaHall;
+        final DAOScreening ds = (DAOScreening) daoScreening;
+        final DAOCinemaHall dch = (DAOCinemaHall) daoCinemaHall;
         
-        CinemaHall ch = dch.getByName(cinemaHallName);
+        final CinemaHall ch = dch.getByName(cinemaHallName);
         return addSoldTicketToScreening(
                 ds.getScreeningsByCinemaHallId(ch.getId()));
     }

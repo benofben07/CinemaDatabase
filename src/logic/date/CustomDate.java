@@ -1,10 +1,10 @@
 package logic.date;
 
-/* FYI
+/* IMPORTANT TO NOTE:
+
    YMS = YEAR, MONTH, DAY
    HMS = HOUR, MINUTE, SECOND
 */
-
 public class CustomDate implements Comparable<CustomDate>{
     private int year, month, day, hour, minute, second;
 
@@ -67,7 +67,7 @@ public class CustomDate implements Comparable<CustomDate>{
     
     // returns number of days in given month
     private int getDayInMonth(int month) {        
-        int[] dayInMonths = new int[] {31, 29, 31, 30,
+        final int[] dayInMonths = new int[] {31, 29, 31, 30,
                                        31, 30, 31, 31,
                                        30, 31, 30, 31};
         return dayInMonths[month - 1];
@@ -84,9 +84,9 @@ public class CustomDate implements Comparable<CustomDate>{
      */
     public static CustomDate stringToCustomDate(String data)
             throws InvalidCustomDateException{
-        String[] tmp = data.split(" ");
-        String[] ymd = tmp[0].split("-");
-        String[] hms = tmp[1].split(":");
+        final String[] tmp = data.split(" ");
+        final String[] ymd = tmp[0].split("-");
+        final String[] hms = tmp[1].split(":");
         
         return new CustomDate(ymd[0], ymd[1], ymd[2],
                               hms[0], hms[1], hms[2]);
@@ -103,7 +103,7 @@ public class CustomDate implements Comparable<CustomDate>{
     public static CustomDate minutesToCustomDate(int minutes) 
             throws InvalidCustomDateException{
         
-        CustomDate date = new CustomDate();
+        final CustomDate date = new CustomDate();
         date.setMinute(minutes);
         return date;
     }
@@ -222,7 +222,7 @@ public class CustomDate implements Comparable<CustomDate>{
         if (other == this) return true;
         if ( !(other instanceof CustomDate) ) return false;
         
-        CustomDate otherDate = (CustomDate) other;
+        final CustomDate otherDate = (CustomDate) other;
         return (compareTo(otherDate) == 0);
     }
 
@@ -242,9 +242,9 @@ public class CustomDate implements Comparable<CustomDate>{
     public int compareTo(CustomDate other) {
         
         // compares years, months, days
-        int yearComparation  = ymdCompare(this.year,  other.year);
-        int monthComparation = ymdCompare(this.month, other.month);
-        int dayComparation   = ymdCompare(this.day,   other.day);
+        final int yearComparation  = ymdCompare(this.year,  other.year);
+        final int monthComparation = ymdCompare(this.month, other.month);
+        final int dayComparation   = ymdCompare(this.day,   other.day);
         
         // if not the same day in same month and same year we're done
         if (yearComparation != 0) {
@@ -303,5 +303,4 @@ public class CustomDate implements Comparable<CustomDate>{
         if (date < 10) return "0" + Integer.toString(date);
         return Integer.toString(date);
     }
-
 }

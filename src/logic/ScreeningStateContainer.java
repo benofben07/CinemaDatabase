@@ -1,7 +1,5 @@
 package logic;
 
-import logic.ScreeningAdditionEnum;
-
 public class ScreeningStateContainer {
     private ScreeningAdditionEnum state;
     

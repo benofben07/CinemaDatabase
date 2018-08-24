@@ -7,7 +7,7 @@ import logic.entities.Movie;
 
 public class MovieTableModel extends AbstractTableModel{
     
-    private List<Pair<Movie, Integer>> movies;
+    private final List<Pair<Movie, Integer>> movies;
     private final String[] colNames;
  
     public MovieTableModel(List<Pair<Movie, Integer>> movies) {
@@ -78,5 +78,4 @@ public class MovieTableModel extends AbstractTableModel{
     
     @Override
     public void setValueAt(Object o, int row, int column) {}
-    
 }

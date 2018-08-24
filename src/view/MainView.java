@@ -60,16 +60,16 @@ public class MainView extends JFrame{
     }
     
     private void createMenus() {
-        JMenuBar menuBar = new JMenuBar();
-        JMenu file       = new JMenu("File");
-        JMenu list       = new JMenu( "List..." );
+        final JMenuBar menuBar = new JMenuBar();
+        final JMenu file       = new JMenu("File");
+        final JMenu list       = new JMenu( "List..." );
         
-        JMenuItem listMovie     = new JMenuItem("Movies");
-        JMenuItem listScreening = new JMenuItem("Screenings");
+        final JMenuItem listMovie = new JMenuItem("Movies");
+        final JMenuItem listScreening = new JMenuItem("Screenings");
         
-        JMenuItem newScreening  = new JMenuItem("Add screening");
+        final JMenuItem newScreening = new JMenuItem("Add screening");
         
-        JMenuItem exitGame      = new JMenuItem("Exit");
+        final JMenuItem exitGame = new JMenuItem("Exit");
         
         listMovie.addActionListener(new ActionListener() {
             @Override
@@ -110,20 +110,20 @@ public class MainView extends JFrame{
     
     private void createScreening() {
         Object[] possibilities = c.getMovieTitles().toArray(new String[0]);
-        String movieTitle = createPopUp(possibilities, "Choose movie!", "Movie");
+        final String movieTitle = createPopUp(possibilities, "Choose movie!", "Movie");
         if (movieTitle == null) {
             display("Addition unsuccessful!");
             return;
         }
         
         possibilities = c.getHallNames().toArray(new String[0]);
-        String hallName = createPopUp(possibilities, "Choose cinemahall!", "Cinema hall");
+        final String hallName = createPopUp(possibilities, "Choose cinemahall!", "Cinema hall");
         if (hallName == null) {
             display("Addition unsuccessful!");
             return;
         }
         
-        String begin = timePopUp();
+        final String begin = timePopUp();
         if (begin == null) {
             display("Addition unsuccessful!");
             return;
@@ -134,7 +134,7 @@ public class MainView extends JFrame{
             return;
         }
         
-        ScreeningStateContainer state = c.newScreening(movieTitle, hallName, begin);
+        final ScreeningStateContainer state = c.newScreening(movieTitle, hallName, begin);
         display(state.toString());
     }
     
@@ -146,8 +146,7 @@ public class MainView extends JFrame{
         return (String) JOptionPane.showInputDialog(this,"time?");
     }
     
-    private String createPopUp(Object[] possibilities, String text, 
-            String title) {
+    private String createPopUp(Object[] possibilities, String text, String title) {
         return (String)JOptionPane.showInputDialog(
                     this,
                     text,
@@ -156,7 +155,6 @@ public class MainView extends JFrame{
                     null,
                     possibilities,
                     possibilities[0]);
-        
     }
     
     private void setup(EntityEnum entity, String movieFilter, String hallFilter) {
@@ -201,7 +199,8 @@ public class MainView extends JFrame{
             if (getContentPane().getWidth() > 600 ) setup(currentEntity, "", "");
             return;
         }
-        JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+        
+        final JLabel picLabel = new JLabel(new ImageIcon(myPicture));
         
         imagePanel.add(picLabel);
         setSize(800, 370);
@@ -209,33 +208,32 @@ public class MainView extends JFrame{
     }
     
     private String[] getClickedScreening(int selectedRow) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 3; ++i) {
             sb.append(table.getValueAt(selectedRow, i).toString())
               .append("###");
         }
         
-        String result = sb.toString();
+        final String result = sb.toString();
         return result.substring(0, result.length() - 4).split("###");
     }
     
     private void addRightClickActionToTable(){
         final JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem deleteItem   = new JMenuItem("Delete");
-        JMenuItem bookSeat     = new JMenuItem("Book Seat");
+        final JMenuItem deleteItem = new JMenuItem("Delete");
+        final JMenuItem bookSeat = new JMenuItem("Book Seat");
         deleteItem.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 if( JOptionPane.showConfirmDialog(lowerPanel, "Yes?") == 0) {
-                    String[] values = getClickedScreening(table.getSelectedRow());
-                    boolean success = 
+                    final String[] values = getClickedScreening(table.getSelectedRow());
+                    final boolean success = 
                         c.removeScreening(
                             values[0],
                             values[1],
                             values[2]);
                     JOptionPane.showMessageDialog(lowerPanel, 
-                            success? "SUCCESS!": "SEATS ALREADY TAKEN!");
+                            success ? "SUCCESS!" : "SEATS ALREADY TAKEN!");
                     setup(currentEntity,"","");
                 }
             }
@@ -245,8 +243,8 @@ public class MainView extends JFrame{
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] values = getClickedScreening(table.getSelectedRow());
-                Screening s = c.screeningFromRaw(values[0], values[1], values[2]);
+                final String[] values = getClickedScreening(table.getSelectedRow());
+                final Screening s = c.screeningFromRaw(values[0], values[1], values[2]);
                 currentScreening = s;
                 createSeatWindow(s.getCinemaHall().getNumOfRows(),
                                  s.getCinemaHall().getNumOfCols(),
@@ -334,8 +332,7 @@ public class MainView extends JFrame{
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true); 
         
-        JScrollPane scrollPane = new JScrollPane(table);
-        add(scrollPane);
+        add(new JScrollPane(table));
     }
     
     private void setTablePanel() {
@@ -344,29 +341,29 @@ public class MainView extends JFrame{
     }
 
     private void setFilterPanel(EntityEnum entity) {
-        List<JComboBox> comboBoxes = new ArrayList<>();
+        final List<JComboBox> comboBoxes = new ArrayList<>();
         
         upperPanel = new JPanel();
         
-        JLabel movieLabel = new JLabel("Movie title:");
+        final JLabel movieLabel = new JLabel("Movie title:");
         upperPanel.add(movieLabel);
         movieLabel.setPreferredSize( new Dimension(70,30) );
 
-        JComboBox movieCombobox = new JComboBox(getComboArray(c.getMovieTitles()));
+        final JComboBox movieCombobox = new JComboBox(getComboArray(c.getMovieTitles()));
         upperPanel.add(movieCombobox);
         comboBoxes.add(movieCombobox);
         
         if (entity != EntityEnum.MOVIE) {
-            JLabel hallLabel = new JLabel("Hall name:");
+            final JLabel hallLabel = new JLabel("Hall name:");
             upperPanel.add(hallLabel);
             hallLabel.setPreferredSize( new Dimension(70,30) );
 
-            JComboBox hallCombobox = new JComboBox(getComboArray(c.getHallNames()));
+            final JComboBox hallCombobox = new JComboBox(getComboArray(c.getHallNames()));
             upperPanel.add(hallCombobox);
             comboBoxes.add(hallCombobox);
         }
         
-        JButton filterButton = new JButton("FILTER!");
+        final JButton filterButton = new JButton("FILTER!");
         filterButton.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent e) { 
@@ -379,7 +376,7 @@ public class MainView extends JFrame{
     }
     
     private String[] getComboArray(List list) {
-        List<String> movies = new ArrayList<>();
+        final List<String> movies = new ArrayList<>();
         movies.add("ALL");
         movies.addAll(list);
         return movies.toArray(new String[0]);

@@ -9,10 +9,12 @@ import java.sql.Statement;
 public abstract class DAOBase {
     
     protected Connection conn;
-    protected Statement s;
+    protected Statement statement;
 
     protected void closeConnection() throws SQLException{
-        if ( conn != null && !conn.isClosed()) conn.close();
+        if ( conn != null && !conn.isClosed()) {
+            conn.close();
+        }
     }
     
     /**

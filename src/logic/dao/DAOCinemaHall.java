@@ -9,29 +9,29 @@ import java.util.List;
 public class DAOCinemaHall extends DAOBase implements DAOGeneral {
 
     public CinemaHall getById(int id) {
-        List<CinemaHall> ch = getDataBySQL(
+        final List<CinemaHall> ch = getDataBySQL(
                 "SELECT * FROM CINEMA_HALL WHERE CINEMA_HALL_ID=" + id);
         return ch.get(0);
     }
     
     public CinemaHall getByName(String name) {
-        List<CinemaHall> ch = getDataBySQL(
+        final List<CinemaHall> ch = getDataBySQL(
                 "SELECT * FROM CINEMA_HALL WHERE NAME=\'" + name + "\'");
         return ch.get(0);
     }
     
     @Override
-    public List getData() {
+    public List<CinemaHall> getData() {
         return getDataBySQL("SELECT * FROM CINEMA_HALL");
         
     }
     
-    private List getDataBySQL(String sqlStatement) {
-        List<CinemaHall> cinemaHalls = new ArrayList<>();
+    private List<CinemaHall> getDataBySQL(String sqlStatement) {
+        final List<CinemaHall> cinemaHalls = new ArrayList<>();
         try {
-            s = getStatement();
-            s.execute(sqlStatement);
-            ResultSet rs = s.getResultSet();
+            statement = getStatement();
+            statement.execute(sqlStatement);
+            final ResultSet rs = statement.getResultSet();
             while(rs.next()){
                 cinemaHalls.add( new CinemaHall(
                         rs.getInt("CINEMA_HALL_ID"),
@@ -43,7 +43,7 @@ public class DAOCinemaHall extends DAOBase implements DAOGeneral {
             }
             
             rs.close();
-            s.close();
+            statement.close();
             closeConnection();
             
         } catch (SQLException e) {
@@ -62,5 +62,4 @@ public class DAOCinemaHall extends DAOBase implements DAOGeneral {
     public void removeData(Object data) {
         // not needed
     }
-
 }

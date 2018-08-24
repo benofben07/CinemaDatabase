@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import logic.entities.Screening;
 
 public class ScreeningTableModel extends AbstractTableModel{
-    private List<Pair<Screening, Integer>> screenings;
+    private final List<Pair<Screening, Integer>> screenings;
     private final String[] colNames;
     
     public ScreeningTableModel(List<Pair<Screening, Integer>> screenings) {
@@ -34,7 +34,7 @@ public class ScreeningTableModel extends AbstractTableModel{
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Screening s = screenings.get(rowIndex).getKey();
+        final Screening s = screenings.get(rowIndex).getKey();
         switch(columnIndex) {
             case 0:
                 return s.getMovie().getTitle();
@@ -61,5 +61,4 @@ public class ScreeningTableModel extends AbstractTableModel{
     
     @Override
     public void setValueAt(Object o, int row, int column) {}
-
 }

@@ -40,12 +40,12 @@ public class CinemaController {
      * @return ScreeningStateContainer object to indicate whether operation
      * was successful or what mistake arose.
      */
-    public ScreeningStateContainer newScreening
-        (String movieTitle, String hallName, String begin) {
+    public ScreeningStateContainer newScreening(String movieTitle,
+                                                String hallName,
+                                                String begin) {
             
         return service.addScreening(service.getByTitle(movieTitle),
-                                  service.getCinemaHallByName(hallName),
-                                  begin);
+                service.getCinemaHallByName(hallName), begin);
     }
     
     public Screening screeningFromRaw(String movieTitle, String chName,
@@ -169,20 +169,11 @@ public class CinemaController {
     }
     
     /* ------------------------ CINEMA_HALL ----------------------------- */
-
-    /**
-     * Returns all CinemaHall objects in a List.
-     * @return List containing CinemaHall objects.
-     */
+    
     public List getCinemaHalls() {
         return service.getCinemaHalls();
     }
-    
-    /**
-     * Returns CinemaHall object with given ID.
-     * @param id
-     * CinemaHall ID.
-     */
+
     public CinemaHall getCHById(int id) {
         return service.getCinemaHallById(id);
     }

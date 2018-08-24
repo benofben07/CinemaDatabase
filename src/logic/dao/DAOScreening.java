@@ -22,7 +22,7 @@ public class DAOScreening extends DAOBase implements DAOGeneral{
     }
     
     public Screening getScreeningById(int id) {
-        List<Screening> screening = getDataBySQL(
+        final List<Screening> screening = getDataBySQL(
                 "SELECT * FROM SCREENING WHERE SCREENING_ID=" + id);
         return screening.get(0);
     }
@@ -35,11 +35,11 @@ public class DAOScreening extends DAOBase implements DAOGeneral{
     }
     
     private List getDataBySQL(String sqlStatement) {
-        List<Screening> screenings = new ArrayList<>();
+        final List<Screening> screenings = new ArrayList<>();
         try {
-            s = getStatement();
-            s.execute(sqlStatement);
-            ResultSet rs = s.getResultSet();
+            statement = getStatement();
+            statement.execute(sqlStatement);
+            final ResultSet rs = statement.getResultSet();
             while(rs.next()){
                 screenings.add( new Screening(
                         rs.getInt("SCREENING_ID"),
@@ -50,7 +50,7 @@ public class DAOScreening extends DAOBase implements DAOGeneral{
                 );
             }
             rs.close();
-            s.close();
+            statement.close();
             closeConnection();
             
         } catch (SQLException e) {
@@ -61,7 +61,7 @@ public class DAOScreening extends DAOBase implements DAOGeneral{
     }
     
     public int getMovieCount(int movieId) {
-        List<Screening> screenings = getDataBySQL(
+        final List<Screening> screenings = getDataBySQL(
                 "SELECT * FROM SCREENING WHERE FK_MOVIE_ID=" + movieId);
         return screenings.size();
     }
@@ -74,52 +74,45 @@ public class DAOScreening extends DAOBase implements DAOGeneral{
      */
     @Override
     public void addData(Object rawData) {
-        List<Object> data = (List) rawData;
+        final List<Object> data = (List) rawData;
         
-        Integer movie_id      = (Integer) data.get(0);
-        CinemaHall cinemaHall = (CinemaHall) data.get(1);
-        String begin          = (String)  data.get(2);
+        final Integer movieId = (Integer) data.get(0);
+        final CinemaHall cinemaHall = (CinemaHall) data.get(1);
+        final String begin = (String)  data.get(2);
         
-        insertData(movie_id, cinemaHall, begin);
-        
+        insertData(movieId, cinemaHall, begin);   
     }
 
     private void insertData(int m_id, CinemaHall ch, String begin) {
         try {
-            s = getStatement();
+            statement = getStatement();
             System.out.println("EXECUTING: " + 
                        "INSERT INTO SCREENING (FK_MOVIE_ID, FK_CINEMA_HALL_ID, " + 
                        "BEGIN) VALUES (" + 
                         m_id + ", " + ch.getId() + ", \'" + begin + "\')");
-            s.execute("INSERT INTO SCREENING (FK_MOVIE_ID, FK_CINEMA_HALL_ID, " + 
+            statement.execute("INSERT INTO SCREENING (FK_MOVIE_ID, FK_CINEMA_HALL_ID, " + 
                       " BEGIN) VALUES (" + 
                        m_id + ", " + ch.getId() + ", \'" + begin + "\')");
             
-            s.close();
+            statement.close();
             closeConnection();
         } catch(SQLException e) {
             e.printStackTrace();
         }
     }
     
-    /**
-     *
-     * @param data Screening object
-     * Removes given screening from database
-     */
     @Override
     public void removeData(Object data) {
         try {
-            s = getStatement();
-            Screening screening = (Screening) data;
-            s.execute("DELETE FROM SCREENING WHERE SCREENING_ID=" + screening.getId());
+            statement = getStatement();
+            final Screening screening = (Screening) data;
+            statement.execute("DELETE FROM SCREENING WHERE SCREENING_ID=" + screening.getId());
             
-            s.close();
+            statement.close();
             closeConnection();
             
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
 }

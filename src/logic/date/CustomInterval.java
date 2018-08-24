@@ -26,10 +26,10 @@ public class CustomInterval {
     public boolean overlapsWith(CustomInterval other) {
         if (this.equals(other)) return true;
         
-        boolean beginEquals = this.begin.equals(other.begin);
-        boolean endEquals   = this.end  .equals(other.end);
-        boolean thisStartedEarlier = this.begin.compareTo(other.begin) < 0;
-        boolean thisEndedEarlier   = this.end  .compareTo(other.end)   < 0;
+        final boolean beginEquals = this.begin.equals(other.begin);
+        final boolean endEquals   = this.end  .equals(other.end);
+        final boolean thisStartedEarlier = this.begin.compareTo(other.begin) < 0;
+        final boolean thisEndedEarlier   = this.end  .compareTo(other.end)   < 0;
         
         // if other started earlier
         if (!thisStartedEarlier) {
@@ -37,7 +37,7 @@ public class CustomInterval {
             if ( this.begin.compareTo(other.end) > 0) return false;
             // other began earlier and ended at the same time this began
             // we don't consider this overlaping
-            if ( this.begin.equals(other.end) )       return false;
+            if ( this.begin.equals(other.end) ) return false;
             // if other started earlier but didn't end until this began
             // they surely overlap
             return true;
@@ -91,10 +91,10 @@ public class CustomInterval {
         if (other == this) return true;
         if ( !(other instanceof CustomInterval) ) return false;
         
-        CustomInterval otherInterval = (CustomInterval) other;
+        final CustomInterval otherInterval = (CustomInterval) other;
         
-        return ( this.begin.equals(otherInterval.begin) && 
-                 this.end.equals(otherInterval.end) );
+        return this.begin.equals(otherInterval.begin)
+                 && this.end.equals(otherInterval.end);
     }
 
     @Override
@@ -111,5 +111,4 @@ public class CustomInterval {
                                   .append("\nend: ").append(endToString())
                                   .toString();
     }
-
 }

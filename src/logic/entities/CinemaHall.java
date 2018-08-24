@@ -37,5 +37,4 @@ public class CinemaHall {
                 .append(name).append(", ").append(numOfRows)
                 .append(", ").append(numOfCols).toString();
     }
-    
 }

@@ -11,12 +11,12 @@ public class DAOMovie extends DAOBase implements DAOGeneral {
     public DAOMovie() {}
     
     public Movie getById(int id) {
-        List<Movie> mList = getDataBySQL("SELECT * FROM MOVIE WHERE MOVIE_ID=" + id);
+        final List<Movie> mList = getDataBySQL("SELECT * FROM MOVIE WHERE MOVIE_ID=" + id);
         return mList.get(0);
     }
     
     public Movie getMovieWithoutId(Movie m) {
-        List<Movie> mList = getDataBySQL( 
+        final List<Movie> mList = getDataBySQL( 
                     "SELECT * FROM MOVIE WHERE" + 
                     " TITLE=\'" + m.getTitle() + "\' AND" +
                     " ORIGIN=\'" + m.getOrigin() + "\' AND" +
@@ -32,31 +32,30 @@ public class DAOMovie extends DAOBase implements DAOGeneral {
     }
 
     public Movie getByTitle(String title) {
-        List<Movie> mList = getDataBySQL(
+        final List<Movie> mList = getDataBySQL(
                 "SELECT * FROM MOVIE WHERE TITLE=\'" + title + "\'");
         return mList.get(0);
     }
     
     @Override
-    public List getData() {    
+    public List<Movie> getData() {    
         return getDataBySQL("SELECT * FROM MOVIE");
     }
     
     // executes the given sql query and returns result as a list 
-    private List getDataBySQL(String sqlStatement) {
-        List<Movie> movies = new ArrayList<>();
+    private List<Movie> getDataBySQL(String sqlStatement) {
+        final List<Movie> movies = new ArrayList<>();
         
         try {
-            s = getStatement();
-            //System.out.println("EXECUTING: " + sqlStatement);
-            s.execute(sqlStatement);
-            ResultSet rs = s.getResultSet();
+            statement = getStatement();
+            statement.execute(sqlStatement);
+            final ResultSet rs = statement.getResultSet();
             while(rs.next()){
                 movies.add( movieFromRs(rs) );
             }
             
             rs.close();
-            s.close();
+            statement.close();
             closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -67,7 +66,7 @@ public class DAOMovie extends DAOBase implements DAOGeneral {
     
     // creates a new Movie object from a given row in database
     private Movie movieFromRs(ResultSet rs) throws SQLException{
-        boolean dubbed = rs.getString("DUBBED").equals("Y");
+        final boolean dubbed = rs.getString("DUBBED").equals("Y");
         return new Movie( 
                         rs.getInt("MOVIE_ID"),
                         rs.getString("TITLE"),
@@ -86,14 +85,14 @@ public class DAOMovie extends DAOBase implements DAOGeneral {
     public void addData(Object data) {
         
         try {
-            s = getStatement();
+            statement = getStatement();
             
-            StringBuilder sqlStatement = new StringBuilder(
+            final StringBuilder sqlStatement = new StringBuilder(
                 "INSERT INTO MOVIE (TITLE, ORIGIN, DUBBED, DIRECTOR, " + 
                 "DESCRIPTION, DURATION, MAX_PLAY, AGE_LIMIT, PICTURE) VALUES (");
-            s.execute(createInsert(sqlStatement, (Movie) data));
+            statement.execute(createInsert(sqlStatement, (Movie) data));
 
-            s.close();
+            statement.close();
             closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -133,15 +132,14 @@ public class DAOMovie extends DAOBase implements DAOGeneral {
     
     public int getMaxPlay(Movie m) {
         try {
-            
-            s = getStatement();
+            statement = getStatement();
             System.out.println("EXECUTING: SELECT MAX_PLAY FROM MOVIE WHERE MOVIE_ID=" + m.getId());
-            s.execute("SELECT MAX_PLAY FROM MOVIE WHERE MOVIE_ID=" + m.getId());
-            ResultSet rs = s.getResultSet();
+            statement.execute("SELECT MAX_PLAY FROM MOVIE WHERE MOVIE_ID=" + m.getId());
+            final ResultSet rs = statement.getResultSet();
             if (rs.next()) return rs.getInt("MAX_PLAY");
             
             rs.close();
-            s.close();
+            statement.close();
             closeConnection();
         } catch (SQLException e) {
             e.printStackTrace();

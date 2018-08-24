@@ -39,12 +39,12 @@ public class SeatBookingFrame extends JFrame{
     private void createBookPanel() {
         bookPanel = new JPanel();
         bookPanel.setPreferredSize(new Dimension(400, 50));
-        JButton verify = new JButton("Book seat!");
+        final JButton verify = new JButton("Book seat!");
         verify.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (JOptionPane.showConfirmDialog(seatPanel, "Sure?") == 0) {
-                    List<Pair<Integer, Integer>> bookedSeats = new ArrayList<>();
+                    final List<Pair<Integer, Integer>> bookedSeats = new ArrayList<>();
                     for (int i = 0; i < row; ++i) {
                         for (int j = 0; j < col; ++j) {
                             if (seats[i][j].getColor().equals(Color.YELLOW)) {
@@ -91,5 +91,4 @@ public class SeatBookingFrame extends JFrame{
         
         return false;
     }
-    
 }

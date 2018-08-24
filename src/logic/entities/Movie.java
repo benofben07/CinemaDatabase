@@ -106,7 +106,7 @@ public class Movie {
     // for example 1,SZAMURAJ,MAGYAR,Y,BELA,EZ EGY SZAR,50,3,1,NINCS
     @Override
     public String toString() {
-        char dubbedChar = (dubbed) ? 'Y' : 'N';
+        final char dubbedChar = (dubbed) ? 'Y' : 'N';
         
         return new StringBuilder()
         .append(id)         .append(",")
