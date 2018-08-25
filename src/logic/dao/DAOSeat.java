@@ -27,7 +27,7 @@ public class DAOSeat extends DAOBase implements DAOGeneral{
         return getDataBySQL("SELECT * FROM SEAT WHERE FK_SCREENING_ID=" + screeningId);
     }
 
-    private List getDataBySQL(String sqlStatement) {
+    private List<Seat> getDataBySQL(String sqlStatement) {
         final List<Seat> seats = new ArrayList<>();
         try {
             statement = getStatement();

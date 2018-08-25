@@ -17,7 +17,7 @@ public class DAOScreening extends DAOBase implements DAOGeneral{
     }
     
     @Override
-    public List getData() {
+    public List<Screening> getData() {
         return getDataBySQL("SELECT * FROM SCREENING");
     }
     
@@ -27,14 +27,14 @@ public class DAOScreening extends DAOBase implements DAOGeneral{
         return screening.get(0);
     }
     
-    public List getDataByMovieId(int id) {
+    public List<Screening> getDataByMovieId(int id) {
         return getDataBySQL( "SELECT * FROM SCREENING WHERE FK_MOVIE_ID=" + id);
     }
-    public List getScreeningsByCinemaHallId(int id) {
+    public List<Screening> getScreeningsByCinemaHallId(int id) {
         return getDataBySQL( "SELECT * FROM SCREENING WHERE FK_CINEMA_HALL_ID=" + id);
     }
     
-    private List getDataBySQL(String sqlStatement) {
+    private List<Screening> getDataBySQL(String sqlStatement) {
         final List<Screening> screenings = new ArrayList<>();
         try {
             statement = getStatement();

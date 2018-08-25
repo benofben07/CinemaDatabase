@@ -69,5 +69,4 @@ public class Screening {
                 .append(", ").append(cinemaHall.toString()).append(", ")
                 .append(interval.beginToString()).toString();
     }
-    
 }
